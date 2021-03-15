@@ -227,6 +227,26 @@ Status insertElement(SequenceList &sequenceList,int index,ElementType newElement
         sequenceList.listSize += sequenceList.incrementSize;
     }
 
+
+    /**
+     * 在n个元素的顺序表中，共有n + 1个可以插入的位置
+     * 
+     * 在位置i插入一个元素时，需要将第n至第i个元素后移一位
+     * 共需要移动[n - i + 1]个元素
+     * 
+     * 从[n + 1]上插入元素共需要移动0[n - (n + 1) + 1]次
+     * 从[n]上插入元素共需要移动1[n - (n) + 1]次
+     * 从[i]上插入元素共需要移动n - i + 1[n - (i) + 1]次
+     * 从[1]上插入元素共需要移动n[n - (1) + 1]次
+     * 
+     * 平均移动次数 = 总的移动次数 / 可以插入位置的多少种情况
+     * 总的移动次数 = [(n + 1)(0 + n)] / 2
+     * 
+     * 平均移动次数 = [(n + 1)(0 + n)] / 2 / (n + 1)
+     * 平均移动次数 = [(n + 1)(0 + n) / 2]  *  [1 / (n + 1)] = n / 2
+    */
+
+
     //要插入的位置之后 每个元素后移一位
     //必须采用从后开始的方式 从前开始的话元素会被覆盖
     for (int i = sequenceList.length - 1;i >= index;i--){
@@ -259,6 +279,24 @@ Status deleteElement(SequenceList &sequenceList,int index,ElementType &element){
     }
 
     element = sequenceList.element[index];
+
+    /**
+     * 在n个元素的顺序表中，共有n个可以删除的位置
+     * 
+     * 在位置i删除一个元素时，需要将第n至第i + 1个元素前移一位
+     * 共需要移动[n - i]个元素
+     * 
+     * 从[n]上删除元素共需要移动0[n - n]次
+     * 从[n - 1]上删除元素共需要移动1[n - (n - 1)]次
+     * 从[i]上删除元素共需要移动n - i[n - i]次
+     * 从[1]上删除元素共需要移动n[n - 1]次
+     * 
+     * 平均移动次数 = 总的移动次数 / 可以删除位置的多少种情况
+     * 总的移动次数 = n[0 + (n - 1)] / 2
+     * 
+     * 平均移动次数 = n[0 + (n - 1)] / 2 / n
+     * 平均移动次数 = [n[0 + (n - 1)] / 2] * [1 / n] = (n - 1) / 2
+    */
 
     //索引index之后的元素全都前移一位
     //必须采用从前开始的方式 从后开始的话元素会被覆盖
