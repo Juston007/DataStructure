@@ -48,7 +48,10 @@ void MergeSequenceList(SequenceList listA,SequenceList listB,SequenceList &listC
         getElement(listA,i,aElement);
         getElement(listB,j,bElement);
 
-        if(aElement > bElement){
+        //我滴个妈呀！！！ 这么简单的问题我居然搞错了 数次排查直接选择性略过了！！！！
+        //这里是较小的数被插入到listC中！！！！
+        //一个符号的差错 居然浪费了我如此多的时间！！！！
+        if(aElement < bElement){
             insertElement(listC,k++,aElement);
             i++;
         }else{
@@ -113,14 +116,14 @@ int main(){
         printf("read ,sqList[%d] = %d\n",i,sqList.element[i]);
 
 
-    printf("\n Megre Sequence List \n");
+    printf("\nMegre Sequence List \n");
 
     SequenceList listA,listB,listC;
     initList(listA);
     initList(listB);
     initList(listC);
 
-    printf("\n listA listB listC init OK! \n");
+    printf("\nlistA listB listC init OK! \n");
 
     insertElement(listA,0,3);
     insertElement(listA,1,5);
@@ -142,7 +145,7 @@ int main(){
     printAllElement(listB);
 
     MergeSequenceList(listA,listB,listC);
-    printf("\n merge print listC all element\n");
+    printf("\nmerge print listC all element\n");
     printAllElement(listC);
 
 
