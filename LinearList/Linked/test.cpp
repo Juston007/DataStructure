@@ -1,6 +1,19 @@
 #include "stdio.h"
 #include "LinearList_Linked.h"
 
+void printAllElement(LinkedList linkedList){
+    int returnElement;
+    for(int i = 0;i < getLength(linkedList);i++){
+        returnElement = -9999999;
+        int code = getElement(linkedList,i,returnElement);
+        if(code == ERROR){
+            printf("ERROR");
+            return;
+        }
+        printf("linkdedList[%d] = %d\n",i,returnElement);
+    }
+}
+
 int main(){
 
     //***************Init************************
@@ -12,38 +25,96 @@ int main(){
     printf("isEmpty = %d\n",isEmpty(linkedList));
 
     insertElement(linkedList,0,9);
-    printf("insert element [%d] at index [%d]     currentLength = %d    isEmpty = %d\n",9,0,getLength(linkedList),isEmpty(linkedList));
-
     insertElement(linkedList,1,8);
-    printf("insert element [%d] at index [%d]     currentLength = %d    isEmpty = %d\n",8,1,getLength(linkedList),isEmpty(linkedList));
-
     insertElement(linkedList,2,7);
-    printf("insert element [%d] at index [%d]     currentLength = %d    isEmpty = %d\n",7,2,getLength(linkedList),isEmpty(linkedList));
-
     insertElement(linkedList,3,6);
-    printf("insert element [%d] at index [%d]     currentLength = %d    isEmpty = %d\n",6,3,getLength(linkedList),isEmpty(linkedList));
-
     insertElement(linkedList,4,5);
-    printf("insert element [%d] at index [%d]     currentLength = %d    isEmpty = %d\n",5,4,getLength(linkedList),isEmpty(linkedList));
+
+    printf("isEmpty = %d length = %d\n",isEmpty(linkedList),getLength(linkedList));
+
+    printAllElement(linkedList);
 
 
-    ElementType returnElement;
+    /*insertElement OK!
+    int resultCode = insertElement(linkedList,6,4);
+    printf("insert element[%d] at index[%d]     resultCode = %d\n",4,6,resultCode);
+    printAllElement(linkedList);
 
-    deleteElement(linkedList,2,returnElement);
-    printf("delete index[%d] value[%d] length = %d\n",2,returnElement,getLength(linkedList));
+    resultCode = insertElement(linkedList,0,0);
+    printf("insert element[%d] at index[%d]     resultCode = %d\n",0,0,resultCode);
+    printAllElement(linkedList);
 
-    getElement(linkedList,2,returnElement);
-    printf("at index[%d] is value[%d]\n",2,returnElement);
+    resultCode = insertElement(linkedList,-1,-1);
+    printf("insert element[%d] at index[%d]     resultCode = %d\n",-1,-1,resultCode);
+    printAllElement(linkedList);
+    */
 
-    printf("value[%d] in index[%d]\n",7,findElement(linkedList,7));
 
-    returnElement = 0;
-    PriorElement(linkedList,4,returnElement);
-    printf("index[%d] prior element is value[%d]\n",4,returnElement);
+    /*
+    //findElement OK!
+    int returnIndex = findElement(linkedList,9);
+    printf("[%d] at index[%d]\n",9,returnIndex);
 
-    returnElement = 0;
-    int code = NextElement(linkedList,4,returnElement);
-    printf("code = %d\n",code);
-    printf("index[%d] next element is value[%d] code = %d\n",4,returnElement,code);
-    
+    returnIndex = -999;
+    returnIndex = findElement(linkedList,-1);
+    printf("[%d] at index[%d]\n",-1,returnIndex);   
+
+    returnIndex = -999;
+    returnIndex = findElement(linkedList,7);
+    printf("[%d] at index[%d]\n",7,returnIndex);   
+    */
+
+   
+   /*
+   //NextElement OK!
+    int returnElement;
+    int resultCode = NextElement(linkedList,0,returnElement);
+    printf("index[%d] next element[%d]  resultCode = %d\n",0,returnElement,resultCode);
+
+    resultCode = -999;
+    returnElement = -999;
+    resultCode = NextElement(linkedList,1,returnElement);
+    printf("index[%d] next element[%d]  resultCode = %d\n",1,returnElement,resultCode);
+
+    resultCode = -999;
+    returnElement = -999;
+    resultCode = NextElement(linkedList,7,returnElement);
+    printf("index[%d] next element[%d]  resultCode = %d\n",7,returnElement,resultCode);
+    */
+
+
+   /*PriorElement OK!
+    int returnElement;
+    int resultCode = PriorElement(linkedList,0,returnElement);
+    printf("index[%d] prior element[%d]  resultCode = %d\n",0,returnElement,resultCode);
+
+    resultCode = -999;
+    returnElement = -999;
+    resultCode = PriorElement(linkedList,3,returnElement);
+    printf("index[%d] prior element[%d]  resultCode = %d\n",3,returnElement,resultCode);
+
+    resultCode = -999;
+    returnElement = -999;
+    resultCode = PriorElement(linkedList,5,returnElement);
+    printf("index[%d] prior element[%d]  resultCode = %d\n",5,returnElement,resultCode);
+    */
+
+   int resultCode,returnElement;
+   resultCode = deleteElement(linkedList,0,returnElement);
+   printf("delete element[%d] at index[%d]     resultCode = %d\n",returnElement,0,resultCode);
+   printAllElement(linkedList);
+
+   resultCode = deleteElement(linkedList,3,returnElement);
+   printf("delete element[%d] at index[%d]     resultCode = %d\n",returnElement,3,resultCode);
+   printAllElement(linkedList);
+
+   resultCode = deleteElement(linkedList,-1,returnElement);
+   printf("delete element[%d] at index[%d]     resultCode = %d\n",returnElement,-1,resultCode);
+   printAllElement(linkedList);
+
+   resultCode = deleteElement(linkedList,3,returnElement);
+   printf("delete element[%d] at index[%d]     resultCode = %d\n",returnElement,3,resultCode);
+   printAllElement(linkedList);
+
+
 }

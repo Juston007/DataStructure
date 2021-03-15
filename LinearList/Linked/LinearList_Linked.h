@@ -165,6 +165,15 @@ int  findElement(LinkedList linkedList,ElementType element){
  * 返回值：找到返回OK 否则ERROR
 */
 Status PriorElement(LinkedList linkedList,int index,ElementType &returnElement){
+
+    if(!(index > 0 && (index < getLength(linkedList)))){
+        return INFEASIBLE;
+    }
+
+    if(!(index - 1 > 0 && (index - 1 < getLength(linkedList)))){
+        return INFEASIBLE;
+    }
+
     return getElement(linkedList,index - 1,returnElement);
 }
 
@@ -175,6 +184,15 @@ Status PriorElement(LinkedList linkedList,int index,ElementType &returnElement){
  * 返回值：找到返回OK 否则ERROR
 */
 Status NextElement(LinkedList linkedList,int index,ElementType &returnElement){
+
+    if(!(index > 0 && (index < getLength(linkedList)))){
+        return INFEASIBLE;
+    }
+
+    if(!(index + 1 > 0 && (index + 1 < getLength(linkedList)))){
+        return INFEASIBLE;
+    }
+
     return getElement(linkedList,index + 1,returnElement);
 }
 
@@ -187,7 +205,7 @@ Status NextElement(LinkedList linkedList,int index,ElementType &returnElement){
 Status insertElement(LinkedList &linkedList,int index,ElementType newElement){
 
     //printf("insertElement/ 1 \n");
-    if(index < 0 || (index > getLength(linkedList))){
+    if(index < 0 || index > getLength(linkedList)){
         return INFEASIBLE;
     }
 
@@ -251,7 +269,7 @@ Status deleteElement(LinkedList &linkedList,int index,ElementType &element){
         return INFEASIBLE;
     }
 
-    LinkedNode *currentElement = linkedList->next;
+    LinkedNode *currentElement = linkedList;
 
     //从0到index
     for(int i = 0;i <= (index - 1);i++){
