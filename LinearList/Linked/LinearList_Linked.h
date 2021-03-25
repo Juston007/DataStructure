@@ -32,11 +32,6 @@ typedef struct LinkedListStruct{
 
 /*=====================================函数声明=====================================*/
 Status initList(LinkedList &linkedList);
-/**
- * 功能：销毁链表
- * 参数：linkedList 链表对象
- * 返回值：销毁结果 
-*/
 Status destroyList(LinkedList &linkedList);
 /**
  * 功能：清空链表
@@ -77,6 +72,20 @@ Status initList(LinkedList &linkedList){
     linkedList->next = NULL;
 
     return OK;
+}
+
+/**
+ * 功能：销毁链表
+ * 参数：linkedList 链表对象
+ * 返回值：销毁结果 
+*/
+Status destroyList(LinkedList &linkedList){
+    if(linkedList != NULL){
+        free(linkedList);
+        return OK;
+    }else{
+        return ERROR;
+    }
 }
 
 
@@ -204,15 +213,12 @@ Status NextElement(LinkedList linkedList,int index,ElementType &returnElement){
 */
 Status insertElement(LinkedList &linkedList,int index,ElementType newElement){
 
-    //printf("insertElement/ 1 \n");
     if(index < 0 || index > getLength(linkedList)){
         return INFEASIBLE;
     }
 
-    // printf("insertElement 2 \n");
     LinkedNode *element = linkedList;
 
-    // printf("insertElement 3 \n");
     //从0到index
     for(int i = 0;i <= (index - 1);i++){
         //当前元素为空 直接返回ERROR
@@ -223,38 +229,21 @@ Status insertElement(LinkedList &linkedList,int index,ElementType newElement){
         element = element->next;
     }
 
-    // while(element->next != NULL){
-    //     element = element->next;
-    // }
-
-    // printf("insertElement 4 \n");
     //申请新节点的内存
     LinkedNode *newNode = (LinkedNode *)malloc(sizeof(LinkedList));
 
-    // printf("insertElement 5 \n");
     //如果新节点分配空间失败 那么直接exit
     if(newNode == NULL)
         exit(1);
 
-    
-    // printf("insertElement 6 \n");
     newNode->data = newElement;
 
-    // if(index == 0){
-    //     newNode->next = NULL;
-    //     linkedList->next = newNode;
-    //     return OK;
-    // }
-
-    // printf("insertElement 7 element->next = %d\n",element->next);
     //新节点的下一个元素是下标为[index - 1]元素的下一个[index]节点
-
     newNode->next = element->next;
-    // printf("insertElement 8 \n");
+
     //新节点是下标为[index - 1]元素的后继
     element->next = newNode;
 
-    // printf("insertElement 9 \n");
     return OK;
 }
 
