@@ -98,9 +98,12 @@ void firstSetupStart(LinkedList &list,int length){
         scanf("%d",&value);
         newNode->data = value;
 
+        //这里必须给新元素的指针赋值为NULL
+        //不然会存在一个脏数据导致程序无法正常运行
         newNode->next = NULL;
         //指针直接指向新元素
         nodePoint->next = newNode;
+
         //指针后移
         nodePoint = nodePoint->next;
     }
