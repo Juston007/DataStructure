@@ -98,6 +98,7 @@ void firstSetupStart(LinkedList &list,int length){
         scanf("%d",&value);
         newNode->data = value;
 
+        newNode->next = NULL;
         //指针直接指向新元素
         nodePoint->next = newNode;
         //指针后移
