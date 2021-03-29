@@ -112,12 +112,16 @@ void firstSetupStart(LinkedList &list,int length){
 
 int main(){
 
+
+
+    /*
     LinkedList list;
     initList(list);
 
     //firstSetupEnd(list,5);
     firstSetupStart(list,5);
     printAllElement(list);
+    */
 
     /*
     LinkedList listA,listB,listC;

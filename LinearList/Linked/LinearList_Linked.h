@@ -2,8 +2,13 @@
  #include "stdlib.h"
 
 
- //Written by Juston
+//Written by Juston
 //2021/03/14 18:48
+
+/**
+ * update comment
+ * 2021/03/29 16:27
+*/
 
 
 /*=====================================宏定义=====================================*/
@@ -50,8 +55,10 @@ Status deleteElement(LinkedList &linkedList,int index,ElementType &element);
 /*=====================================函数声明=====================================*/
 
 
+//带头节点的链表
 
 /*=====================================函数定义=====================================*/
+
 /**
  * 功能：初始化链表，为其分配存储空间
  * 参数：linkedList 链表对象
@@ -59,6 +66,7 @@ Status deleteElement(LinkedList &linkedList,int index,ElementType &element);
 */
 Status initList(LinkedList &linkedList){
 
+    //分配一个节点的内存空间
     linkedList = (LinkedNode *)malloc(sizeof(LinkedNode));
 
     //内存分配失败直接退出
@@ -81,6 +89,7 @@ Status initList(LinkedList &linkedList){
 */
 Status destroyList(LinkedList &linkedList){
     if(linkedList != NULL){
+        //直接释放链表的第一个节点即可
         free(linkedList);
         return OK;
     }else{
@@ -101,10 +110,10 @@ int getLength(LinkedList linkedList){
     LinkedList nextElement = linkedList->next;
 
     //最后一个元素指针域为空
+    //时间复杂度 O(n)
     while(nextElement != NULL){
-        
+        //长度加一并指向下一个元素
         listLength++;
-        //printf("listLength = %d\n",listLength);
         nextElement = nextElement->next;
     }
 
@@ -128,11 +137,16 @@ Status isEmpty(LinkedList linkedList){
  * 返回值：找到返回OK 否则ERROR
 */
 Status getElement(LinkedList linkedList,int index,ElementType &returnElement){
+
+    //首先指向头节点
     LinkedNode *element = linkedList;
 
-    //从0到index
+    //循环几次就指向第几个元素
+    //从0到index(用户要找的下标)
+    //时间复杂度 O(n)
     for(int i = 0;i <= index;i++){
-        //当前元素为空 直接返回ERROR
+        //还没找到index的元素
+        //但是当前元素为空 直接返回ERROR
         if(element == NULL)
             return ERROR;
 
@@ -140,6 +154,7 @@ Status getElement(LinkedList linkedList,int index,ElementType &returnElement){
         element = element->next;
     }
 
+    //返回下标为index的元素值
     returnElement = element->data;
     return OK;
 }
@@ -151,16 +166,24 @@ Status getElement(LinkedList linkedList,int index,ElementType &returnElement){
  * 返回值：该元素在链表中的下标 找不到返回-1
 */
 int  findElement(LinkedList linkedList,ElementType element){
+
     int listLength = getLength(linkedList);
+
+    //先指向a1节点
     LinkedNode *currentElement = linkedList->next;
 
+
+    //0 ~ [index - 1]
     for(int i = 0;i < listLength;i++){
+        //还没找到元素 但是当前元素是NULL 那么直接返回ERROR
         if(currentElement == NULL)
             return ERROR;
         
+        //找到用户要寻找的元素 返回其下标
         if(currentElement->data == element)
             return i;
         
+        //没有找到 接着指向下一个元素
         currentElement = currentElement->next;
     }
 
@@ -175,10 +198,12 @@ int  findElement(LinkedList linkedList,ElementType element){
 */
 Status PriorElement(LinkedList linkedList,int index,ElementType &returnElement){
 
+    //下标[index]不合法
     if(!(index > 0 && (index < getLength(linkedList)))){
         return INFEASIBLE;
     }
 
+    //下标[index - 1]不合法
     if(!(index - 1 > 0 && (index - 1 < getLength(linkedList)))){
         return INFEASIBLE;
     }
@@ -194,10 +219,12 @@ Status PriorElement(LinkedList linkedList,int index,ElementType &returnElement){
 */
 Status NextElement(LinkedList linkedList,int index,ElementType &returnElement){
 
+    //下标[index]不合法
     if(!(index > 0 && (index < getLength(linkedList)))){
         return INFEASIBLE;
     }
 
+    //下标[index + 1]不合法
     if(!(index + 1 > 0 && (index + 1 < getLength(linkedList)))){
         return INFEASIBLE;
     }
@@ -213,13 +240,15 @@ Status NextElement(LinkedList linkedList,int index,ElementType &returnElement){
 */
 Status insertElement(LinkedList &linkedList,int index,ElementType newElement){
 
+    //下标[index]不合法
     if(index < 0 || index > getLength(linkedList)){
         return INFEASIBLE;
     }
 
+    //先指向头节点
     LinkedNode *element = linkedList;
 
-    //从0到index
+    //指向第[i - 1]个元素
     for(int i = 0;i <= (index - 1);i++){
         //当前元素为空 直接返回ERROR
         if(element == NULL)
@@ -254,13 +283,16 @@ Status insertElement(LinkedList &linkedList,int index,ElementType newElement){
  * 返回值：删除结果
 */
 Status deleteElement(LinkedList &linkedList,int index,ElementType &element){
+
+    //下标[index]不合法
     if(index < 0 || (index > getLength(linkedList))){
         return INFEASIBLE;
     }
 
+    //先指向头节点
     LinkedNode *currentElement = linkedList;
 
-    //从0到index
+    //指向第[i - 1]个元素
     for(int i = 0;i <= (index - 1);i++){
         //当前元素为空 直接返回ERROR
         if(element == NULL)
@@ -270,13 +302,15 @@ Status deleteElement(LinkedList &linkedList,int index,ElementType &element){
         currentElement = currentElement->next;
     }
 
+    //没有第i个元素
     if(currentElement->next == NULL){
         return OVERFLOW;
     }
 
+    //把要删除的元素返回给调用者
     element = currentElement->next->data;
 
-    //直接越过要删除的元素
+    //直接越过要删除的元素指向其指针域
     currentElement->next = currentElement->next->next;
 
     return OK;

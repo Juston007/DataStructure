@@ -194,6 +194,7 @@ Status pop(SequenceStack &stack,ElementType &returnElement){
     if(&stack == NULL)
         return ERROR;
 
+        
     if(isEmpty(stack))
         return FALSE;
 
