@@ -17,6 +17,26 @@
  **/
 
 
+/**
+ * 关于顺序栈 top初始值的不同有两种实现方式
+ * 
+ * 第一种：top = 0
+ * 入栈 *(stack.top++) = value
+ * 出栈 value = *(--stack.top)
+ * 栈顶 value = *(stack.top - 1)
+ * 栈空 stack.top == stack.base
+ * 栈满 stack.top == stack.base + stack.stackSize
+ *
+ *
+ * 第二种：top = -1
+ * 入栈 *(++stack.top) = value
+ * 出栈 value = *(stack.top--)
+ * 栈顶 value = *(stack.top)
+ * 栈空 stack.top + 1 == stack.base
+ * 栈满 stack.top + 1 == stack.base + stack.stackSize
+*/
+
+
 /*=====================================宏定义=====================================*/
 #define Status       int
 
@@ -98,9 +118,11 @@ Status destoryStack(SequenceStack &stack){
     if(&stack == NULL)
         return ERROR;
 
+    //释放其用于存放数据的连续内存空间
     if(stack.base != NULL)
         free(stack.base);
     
+    //释放栈结构体
     free(&stack);
 
     return TRUE;
@@ -115,11 +137,12 @@ Status clearStack(SequenceStack &stack){
     if(&stack == NULL)
         return ERROR;
 
+    //所有元素出栈
     int length = getLength(stack);
     for(int i = 0;i < length;i++){
         ElementType returnValue;
         Status resCode = pop(stack,returnValue);
-        printf("i = %d  resCode = %d returnValue = %d\n",i,resCode,returnValue);
+        //printf("i = %d  resCode = %d returnValue = %d\n",i,resCode,returnValue);
     }
 
     return TRUE;
