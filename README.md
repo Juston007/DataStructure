@@ -8,3 +8,6 @@
   
 # Stack       栈
     # SequenceStack   顺序栈
+
+# Stack       队列
+    # LinkedStack     链式队列
