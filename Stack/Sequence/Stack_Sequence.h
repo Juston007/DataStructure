@@ -122,8 +122,9 @@ Status destoryStack(SequenceStack &stack){
     if(stack.base != NULL)
         free(stack.base);
     
+    //TODO 这里有点问题
     //释放栈结构体
-    free(&stack);
+    //free(&stack);
 
     return TRUE;
 }
