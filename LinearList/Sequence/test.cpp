@@ -79,6 +79,7 @@ void MergeSequenceList(SequenceList listA,SequenceList listB,SequenceList &listC
 }
 
 int main(){
+    /*
     //定义结构体变量
     SequenceList sqList;
 
@@ -106,7 +107,7 @@ int main(){
     /*int statusCode = insertElement(sqList,11,0);
     printf("insert index 11 value 0 ,result = %d\n",statusCode);
     statusCode = insertElement(sqList,-1,0);
-    printf("insert index -1 value 0 ,result = %d\n",statusCode);*/
+    printf("insert index -1 value 0 ,result = %d\n",statusCode);
 
 
     //printf("sqList is empty?  %s\n",isEmpty(sqList) == TRUE ? "yes" : "no");
@@ -116,7 +117,7 @@ int main(){
         printf("read ,sqList[%d] = %d\n",i,sqList.element[i]);
 
 
-    printf("\nMegre Sequence List \n");
+    printf("\nMegre Sequence List \n");*/
 
     SequenceList listA,listB,listC;
     initList(listA);
