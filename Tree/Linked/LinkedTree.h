@@ -116,7 +116,7 @@ int getTreeDepth(Tree tree);
 
 /**
  * 功能：获取树的根节点
- * 参数：tree 被初始化的树 returnRoot 通过此参数返回根节点
+ * 参数：tree 树 returnRoot 通过此参数返回根节点
  * 返回值：获取结果
 */
 int getRoot(Tree tree, Node &returnRoot);
@@ -196,11 +196,30 @@ Status searchTree(Tree tree, ElementType element, Tree &returnTree){
 
 /**
  * 功能：在某个节点插入子树
- * 参数：tree 树 node 当前节点 i 所指节点的度+1 sonTree 子树
+ * 参数：tree 树 parentNode 插入结点的父节点 i 所指节点的度+1 sonTree 子树
  * 返回值：插入结果
 */
-Status insertChild(Tree &tree, Node &node,int i, Tree &sonTree){
-    return OK;
+Status insertChild(Tree &tree, Node parentNode,int i, Tree &sonTree){
+
+    //如果为空树那么新建一个结点给数据赋值并返回
+    if(isEmpty(tree)){
+        tree = sonTree;
+        printf("create new tree[%d] address %x     &sonTree->child = %x\n", sonTree->data, (void*)sonTree, &(sonTree->child));
+        return OK;
+    }else{
+        //寻找其父结点是否存在
+        Tree searchResult;
+
+        //如果其父节点不存在树中那么返回ERROR
+        if(searchTree(tree, parentNode.data, searchResult) != TRUE){
+            return ERROR;
+        }
+        else{            
+            printf("insert  new node[%d] address %x     sonTree->child = %x\n", sonTree->data, (void*)sonTree, &(sonTree->child));
+            //将新子树插入其父结点的数据域顺序表中
+            return listInsertElement(searchResult->child,i,(void*)sonTree);
+        }
+    }
 }
 
 /**
@@ -208,48 +227,16 @@ Status insertChild(Tree &tree, Node &node,int i, Tree &sonTree){
  * 参数：tree 树 parentNode 插入结点的父节点 value 要插入的结点元素值 i 所指节点的度+1 returnNode 通过此参数返回新生成的结点
  * 返回值：插入结果
 */
-Status insertNode(Tree &tree, Node &parentNode, ElementType value, int i, Node &returnNode){
+Status insertNode(Tree &tree, Node parentNode, ElementType value, int i, Node &returnNode){
 
-    //如果为空树那么新建一个结点给数据赋值并返回
-    if(isEmpty(tree)){
-        tree = (Node *)malloc(sizeof(Node));
+    //构建一个新结点
+    Tree newNode = (Node *)malloc(sizeof(Node));
+    newNode->data = value;
+    initList(newNode->child);
 
-        if(tree == NULL)
-            exit(0);
-
-        tree->data = value;
-        //初始化子节点顺序表
-        initList(tree->child);
-        returnNode = *tree;
-
-        printf("create tree  node[%d] address %x     newNode.child = %x\n", value, (void*)tree, &(tree->child));
-        
-        return OK;
-    }else{
-        //寻找其父结点是否存在
-        Tree searchResult;
-        searchTree(tree, parentNode.data, searchResult);
-
-        //如果其父节点不存在树中那么返回ERROR
-        if(searchResult == NULL){
-            return ERROR;
-        }
-        else{
-            //否则新建一个结点给数据域赋值并返回
-            Tree newNode = (Node *)malloc(sizeof(Node));
-            printf("insert  new node[%d] address %x     newNode.child = %x\n", value, (void*)newNode, &(newNode->child));
-            
-            if(&newNode == NULL)
-                exit(0);
-
-            initList(newNode->child);
-            newNode->data = value;
-            returnNode = *newNode;
-
-            //将新结点插入其父结点的数据域顺序表中
-            return listInsertElement(parentNode.child,i,(void*)newNode);
-        }
-    }
+    //将新结点返回
+    returnNode = *newNode;
+    return insertChild(tree, parentNode, i, newNode);
 }
 
 /**
@@ -257,7 +244,31 @@ Status insertNode(Tree &tree, Node &parentNode, ElementType value, int i, Node &
  * 参数：tree 树 node 当前节点 i 节点的度
  * 返回值：删除结果
 */
-Status deleteChild(Tree &tree, Node &node,int i){
+Status deleteChild(Tree &tree, Node parentNode, int i, Node &deleteNode){
+    if(tree == NULL){
+        return ERROR;
+    }else{
+        Tree searchResult;
+
+        if(searchTree(tree, parentNode.data, searchResult) != TRUE){
+            return ERROR;
+        }else{
+            ListElementType returnPtr;
+            int res = listDeleteElement(searchResult->child, i, returnPtr);
+            deleteNode = *((Tree)returnPtr);
+            return res;
+        }
+    }
+    return OK;
+}
+
+/**
+ * 功能：删除某个节点的子树
+ * 参数：tree 树 node 当前节点 i 节点的度
+ * 返回值：删除结果
+*/
+Status deleteChild(Tree &tree, Node &parentNode,Node deleteNode){
+    
     return OK;
 }
 
