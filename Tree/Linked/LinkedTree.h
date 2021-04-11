@@ -66,6 +66,8 @@ typedef struct LinkedTreeNodeStruct{
 
 
 /*=====================================函数声明=====================================*/
+Status searchTree(Tree tree, ElementType element, Tree &returnTree);
+Status getParentNode(Tree tree, Tree parentNode, Node node, Tree &returnParentPtr, int layer);
 
 /**
  * 功能：初始化树  没有头节点
@@ -96,7 +98,9 @@ void createTree(Tree &tree);
  * 参数：tree 树
  * 返回值：清空结果
 */
-void clearTree(Tree &tree);
+void clearTree(Tree &tree){
+    tree = NULL;
+}
 
 /**
  * 功能：是否为空树
@@ -119,42 +123,120 @@ int getTreeDepth(Tree tree);
  * 参数：tree 树 returnRoot 通过此参数返回根节点
  * 返回值：获取结果
 */
-int getRoot(Tree tree, Node &returnRoot);
+Status getRoot(Tree tree, Node &returnRoot){
+    if(isEmpty(tree)){
+        return ERROR;
+    }else{
+        returnRoot = *tree;
+        return TRUE;
+    }
+}
 
 /**
  * 功能：获取树中某个节点的值
  * 参数：tree 树 node 节点 returnElement 通过此参数返回节点的值
  * 返回值：获取结果
 */
-Status getValue(Tree tree, Node node, ElementType &returnElement);
+Status getValue(Tree &tree, Node node, ElementType &returnElement){
+    Tree returnTree;
+    int code = searchTree(tree, node.data, returnTree);
+    if(code == TRUE){
+        returnElement = returnTree->data;
+    }
+    return code;
+}
 
 /**
  * 功能：给树中某个节点赋值
  * 参数：tree 树 node 节点 value 要赋的值
  * 返回值：赋值结果
 */
-Status assign(Tree &tree, Node node, ElementType value);
+Status assign(Tree &tree, Node node, ElementType value){
+    Tree returnTree;
+    int code = searchTree(tree, node.data, returnTree);
+    if(code == TRUE){
+        returnTree->data = value;
+    }
+    return code;
+}
 
 /**
  * 功能：获取树中某个节点的双亲
- * 参数：tree 被初始化的树 node 节点 returnParent 通过此参数返回节点的双亲
+ * 参数：tree 被初始化的树 node 节点 returnParent 通过此参数返回节点的双亲 layer 当前层数 调用时请填1
  * 返回值：获取结果
 */
-Status getParent(Tree tree, Node node, Node &returnParent);
+Status getParentNode(Tree tree, Tree parentNode, Node node, Tree &returnParentPtr){
+    return getParentNode(tree, parentNode, node, returnParentPtr, 1);
+}
+
+Status getParentNode(Tree tree, Tree parentNode, Node node, Tree &returnParentPtr, int layer){
+
+    //把此参数置为空 防止误判
+    returnParentPtr = NULL;
+
+    //如果为空的话直接返回FALSE
+    if(isEmpty(tree)){
+        return FALSE;
+    }
+    else{
+        //如果该结点的数据和我们要查找的数据相同那么返回其指针
+        if(tree->data == node.data){
+            //如果层数大于1那么返回该结点指针 否则返回空
+            returnParentPtr = layer <= 1 ? NULL : parentNode;
+            return FALSE;
+        }
+        else{
+            //否则的话递归 寻找其第i个子节点是否符合
+            int length = getListLength(tree->child);
+
+            for(int i = 0;i < length;i++){
+                //获取第i个子结点的指针
+                ListElementType returnNodePtr;
+                int code = getListElement(tree->child,i,returnNodePtr);
+                if(code == OK){
+                    //递归子树查找  将取出的结点作为一颗树接着查找
+                    code = getParentNode((Tree)returnNodePtr, tree, node, returnParentPtr, layer + 1);
+                    //如果返回父结点指针的参数不为空 说明已经找到了指定结点
+                    if(returnParentPtr != NULL){
+                        //那么我们返回他的父节点即可  
+                        return TRUE;
+                    }
+                }
+            }
+
+            return FALSE;
+        }
+    }
+}
 
 /**
- * 功能：获取某个节点的左子树
- * 参数：tree 树 node 当前节点 returnLeftChild 通过此参数返回左子树
+ * 功能：获取某个节点的指定位置上的子树
+ * 参数：tree 树 node 当前节点 returnLeftChild 通过此参数返回子树
  * 返回值：获取结果
 */
-Status getLeftChild(Tree tree, Node node, Node returnLeftChild);
+Status getChild(Tree &tree, Node parentNode, int i, Tree &returnChild){
+    //如果为空树那么新建一个结点给数据赋值并返回
+    if(isEmpty(tree)){
+        return ERROR;
+    }else{
+        //寻找其父结点是否存在
+        Tree searchResult;
 
-/**
- * 功能：获取某个节点的右子树
- * 参数：tree 树 node 当前节点 returnRightChild 通过此参数返回右子树
- * 返回值：获取结果
-*/
-Status getRightChild(Tree tree, Node node, Node returnRightChild);
+        //如果其父节点不存在树中那么返回ERROR
+        if(searchTree(tree, parentNode.data, searchResult) != TRUE){
+            return ERROR;
+        }
+        else{            
+            ListElementType returnElement;
+            int res = getListElement(searchResult->child, i, returnElement);
+            if(res == OK){
+                returnChild = (Tree)returnElement;
+            }
+            return res;
+        }
+    }
+}
+
 
 /**
  * 功能：搜索树中某个结点的元素值
@@ -267,9 +349,30 @@ Status deleteChild(Tree &tree, Node parentNode, int i, Node &deleteNode){
  * 参数：tree 树 node 当前节点 i 节点的度
  * 返回值：删除结果
 */
-Status deleteChild(Tree &tree, Node &parentNode,Node deleteNode){
-    
-    return OK;
+Status deleteChild(Tree &tree, Node parentNode,Node &deleteNode){
+
+    if(tree == NULL){
+        return ERROR;
+    }else{
+        Tree searchResult;
+        if(searchTree(tree, parentNode.data, searchResult) != TRUE){
+            return ERROR;
+        }else{
+            int length = getListLength(searchResult->child);
+            for(int i = 0;i < length;i++){
+                //获取第i个子结点的指针
+                ListElementType returnNodePtr;
+                int code = getListElement(searchResult->child, i, returnNodePtr);
+                if(code == OK){
+                    if(((Tree)returnNodePtr)->data == deleteNode.data){
+                        deleteChild(tree, *searchResult, i, deleteNode);
+                        return TRUE;
+                    }
+                }
+            }
+        }
+    }
+    return FALSE;
 }
 
 

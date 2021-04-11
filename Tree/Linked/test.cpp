@@ -10,14 +10,14 @@ int main(){
 
     initTree(tree);
     printf("init tree!\n\n");
-    printf("parentNode address %x   returnNode address %x\n", &parentNode, &returnNode);
+    //printf("parentNode address %x   returnNode address %x\n", &parentNode, &returnNode);
 
 
     int code = insertNode(tree, returnNode, 1, 2, returnNode);
     printf("code = %d insert root node element [%d]\n\n", code, 1);
 
     printTreeAllElement(tree);
-    printf("\n");
+    printf("\n\n");
 
 
 
@@ -31,7 +31,7 @@ int main(){
     printf("code = %d insert element [%d]\n\n", code, 13);
 
     printTreeAllElement(tree);
-    printf("\n");
+    printf("\n\n");
 
 
     
@@ -48,13 +48,13 @@ int main(){
     printf("code = %d delete element [%d]\n\n", code, deleteNode.data);
 
     printTreeAllElement(tree);
-    printf("\n");
+    printf("\n\n");
 
 
 
     parentNode = returnNode;
 
-    printf("parentNode address %x   returnNode address %x\n", &parentNode, &returnNode);
+    //printf("parentNode address %x   returnNode address %x\n", &parentNode, &returnNode);
 
     code = insertNode(tree, parentNode, 1321, 0, returnNode);
     printf("code = %d insert element [%d]\n\n", code, 1321);
@@ -63,7 +63,7 @@ int main(){
     printf("code = %d insert element [%d]\n\n", code, 1322);
 
     printTreeAllElement(tree);
-    printf("\n");
+    printf("\n\n");
 
 
 /*
@@ -80,15 +80,50 @@ int main(){
     code = insertChild(tree, parentNode, 2, sonTree);
     printf("code = %d insert element [%d]\n\n", code, 1323);
 
+    printTreeAllElement(tree);
+    printf("\n\n");
 
 
+    /* Search Tree */
     Tree returnTree = NULL;
     code = searchTree(tree,1323,returnTree);
     printf("code = %d    search element [%d]  address %x\n\n\n", code, 1323,returnTree);
+    
+
+    Node deleteNode2;
+    deleteNode2.data = 1323;
+
+    code = deleteChild(tree, parentNode, deleteNode2);
+    printf("code = %d delete element [%d]\n\n", code, deleteNode2.data);
 
     printTreeAllElement(tree);
-    printf("\n");
+    printf("\n\n");
 
+    returnTree = NULL;
+    code = searchTree(tree,1323,returnTree);
+    printf("code = %d    search element [%d]  address %x\n\n\n", code, 1323,returnTree);
+
+    Node node3;
+    node3.data = 132;
+    Tree returnParentNode = NULL;
+    code = getParentNode(tree,NULL, node3, returnParentNode);
+    printf("code = %d get [%d] parent node [%x]\n\n", code, node3.data, returnParentNode);
+
+
+    Tree returnLeftTree;
+    Node node4;
+    node4.data = 1;
+    int position = 3;
+    code = getChild(tree, node4, position, returnLeftTree);
+    printf("code = %d get [%d] position[%d] tree [%x]\n\n", code, node4.data, position, returnLeftTree);
+
+    Node node5;
+    node5.data = 1323;
+    int assignValue = 999;
+    code = assign(tree, node5, assignValue);
+    printf("code = %d assign [%d] value [%d]\n\n", code, node5.data, assignValue);
+    printTreeAllElement(tree);
+    printf("\n\n");
 }
 
 void printTreeAllElement(Tree tree){
