@@ -2,7 +2,6 @@
 #include "stdlib.h"
 #include "LinearList_Sequence_Tree.h"
 
-
 //Written by Juston
 //2021/04/09 19:54
 
@@ -60,14 +59,38 @@
 /*=====================================结构体=====================================*/
 typedef struct LinkedTreeNodeStruct{
     ElementType data;                          //数据域 存储着结点的值
-    SequenceList child;                            //结点的度 该结点所拥有的子树的个数
-}Node,*Tree;
+    SequenceList child;                        //数据域 该结点所拥有的子树的个数
+} Node, *Tree;
 /*=====================================结构体=====================================*/
 
 
 /*=====================================函数声明=====================================*/
-Status searchTree(Tree tree, ElementType element, Tree &returnTree);
+Status initTree(Tree &tree);
+void destoryTree(Tree &tree);
+void createTree(Tree &tree);
+void clearTree(Tree &tree);
+Status isEmpty(Tree tree);
+/**
+ * 功能：获取树的深度
+ * 参数：tree 树
+ * 返回值：树的深度
+*/
+int getTreeDepth(Tree tree);
+Status getRoot(Tree tree, Node &returnRoot);
+Status getValue(Tree &tree, Node node, ElementType &returnElement);
+Status assign(Tree &tree, Node node, ElementType value);
+Status getParentNode(Tree tree, Tree parentNode, Node node, Tree &returnParentPtr);
 Status getParentNode(Tree tree, Tree parentNode, Node node, Tree &returnParentPtr, int layer);
+Status getChild(Tree &tree, Node parentNode, int i, Tree &returnChild);
+Status searchTree(Tree tree, ElementType element, Tree &returnTree);
+Status insertChild(Tree &tree, Node parentNode,int i, Tree &sonTree);
+Status insertNode(Tree &tree, Node parentNode, ElementType value, int i, Node &returnNode);
+Status deleteChild(Tree &tree, Node parentNode, int i, Node &deleteNode);
+Status deleteChild(Tree &tree, Node parentNode,Node &deleteNode);
+Status traverseTree(Tree tree, void Visit());
+/*=====================================函数声明=====================================*/
+
+/*=====================================函数定义=====================================*/
 
 /**
  * 功能：初始化树  没有头节点
@@ -111,23 +134,17 @@ Status isEmpty(Tree tree){
     return tree == NULL;
 }
 
-/**
- * 功能：获取树的深度
- * 参数：tree 树
- * 返回值：树的深度
-*/
-int getTreeDepth(Tree tree);
 
 /**
  * 功能：获取树的根节点
  * 参数：tree 树 returnRoot 通过此参数返回根节点
  * 返回值：获取结果
 */
-Status getRoot(Tree tree, Node &returnRoot){
+Status getRoot(Tree tree, ElementType &returnRoot){
     if(isEmpty(tree)){
         return ERROR;
     }else{
-        returnRoot = *tree;
+        returnRoot = tree->data;
         return TRUE;
     }
 }
@@ -168,6 +185,7 @@ Status assign(Tree &tree, Node node, ElementType value){
 Status getParentNode(Tree tree, Tree parentNode, Node node, Tree &returnParentPtr){
     return getParentNode(tree, parentNode, node, returnParentPtr, 1);
 }
+
 
 Status getParentNode(Tree tree, Tree parentNode, Node node, Tree &returnParentPtr, int layer){
 
@@ -291,7 +309,6 @@ Status insertChild(Tree &tree, Node parentNode,int i, Tree &sonTree){
     }else{
         //寻找其父结点是否存在
         Tree searchResult;
-
         //如果其父节点不存在树中那么返回ERROR
         if(searchTree(tree, parentNode.data, searchResult) != TRUE){
             return ERROR;
@@ -299,7 +316,8 @@ Status insertChild(Tree &tree, Node parentNode,int i, Tree &sonTree){
         else{            
             printf("insert  new node[%d] address %x     sonTree->child = %x\n", sonTree->data, (void*)sonTree, &(sonTree->child));
             //将新子树插入其父结点的数据域顺序表中
-            return listInsertElement(searchResult->child,i,(void*)sonTree);
+            //TODO 这里有问题 如果插入了一个中间的层 应该怎么处理
+            return listInsertElement(searchResult->child, i, (void*)sonTree);
         }
     }
 }
@@ -313,11 +331,15 @@ Status insertNode(Tree &tree, Node parentNode, ElementType value, int i, Node &r
 
     //构建一个新结点
     Tree newNode = (Node *)malloc(sizeof(Node));
+
+    //初始化其数据域和指针域
     newNode->data = value;
     initList(newNode->child);
 
-    //将新结点返回
+    //将新结点赋值给参数以返回
     returnNode = *newNode;
+
+    //插入到父结点
     return insertChild(tree, parentNode, i, newNode);
 }
 
@@ -327,21 +349,23 @@ Status insertNode(Tree &tree, Node parentNode, ElementType value, int i, Node &r
  * 返回值：删除结果
 */
 Status deleteChild(Tree &tree, Node parentNode, int i, Node &deleteNode){
-    if(tree == NULL){
+
+    //先搜索其父结点检查是否在树中
+    Tree searchResult;
+    if(searchTree(tree, parentNode.data, searchResult) != TRUE){
         return ERROR;
     }else{
-        Tree searchResult;
+        //直接删除父结点的编号为i的子结点 并保存其指针
+        ListElementType returnPtr;
+        int res = listDeleteElement(searchResult->child, i, returnPtr);
 
-        if(searchTree(tree, parentNode.data, searchResult) != TRUE){
-            return ERROR;
-        }else{
-            ListElementType returnPtr;
-            int res = listDeleteElement(searchResult->child, i, returnPtr);
+        if(res == OK){
+            //将被删除的指针赋值给参数以返回
             deleteNode = *((Tree)returnPtr);
-            return res;
         }
+        
+        return res;
     }
-    return OK;
 }
 
 /**
@@ -351,27 +375,29 @@ Status deleteChild(Tree &tree, Node parentNode, int i, Node &deleteNode){
 */
 Status deleteChild(Tree &tree, Node parentNode,Node &deleteNode){
 
-    if(tree == NULL){
+    //先搜索其父结点检查是否在树中
+    Tree searchResult;
+    if(searchTree(tree, parentNode.data, searchResult) != TRUE){
         return ERROR;
     }else{
-        Tree searchResult;
-        if(searchTree(tree, parentNode.data, searchResult) != TRUE){
-            return ERROR;
-        }else{
-            int length = getListLength(searchResult->child);
-            for(int i = 0;i < length;i++){
-                //获取第i个子结点的指针
-                ListElementType returnNodePtr;
-                int code = getListElement(searchResult->child, i, returnNodePtr);
-                if(code == OK){
-                    if(((Tree)returnNodePtr)->data == deleteNode.data){
-                        deleteChild(tree, *searchResult, i, deleteNode);
-                        return TRUE;
-                    }
+        //获取父结点的度
+        int length = getListLength(searchResult->child);
+
+        for(int i = 0;i < length;i++){
+            //取出父结点的第i个子结点
+            ListElementType returnNodePtr;
+            int code = getListElement(searchResult->child, i, returnNodePtr);
+            
+            //将子结点的数据与将要被删除结点的数据比较 如果一致那么直接删除该结点
+            if(code == OK){
+                if(((Tree)returnNodePtr)->data == deleteNode.data){
+                    deleteChild(tree, *searchResult, i, deleteNode);
+                    return TRUE;
                 }
             }
         }
     }
+
     return FALSE;
 }
 
@@ -382,4 +408,4 @@ Status deleteChild(Tree &tree, Node parentNode,Node &deleteNode){
  * 返回值：遍历结果
 */
 Status traverseTree(Tree tree, void Visit());
-/*=====================================函数声明=====================================*/
+/*=====================================函数定义=====================================*/

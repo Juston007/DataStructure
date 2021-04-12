@@ -125,8 +125,8 @@ int main(){
     printTreeAllElement(tree);
     printf("\n\n");
 
-    int depth = getTreeDepth(tree);
-    printf("depth %d\n",depth);
+    // int depth = getTreeDepth(tree);
+    // printf("depth %d\n",depth);
 }
 
 void printTreeAllElement(Tree tree){
