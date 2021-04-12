@@ -124,6 +124,9 @@ int main(){
     printf("code = %d assign [%d] value [%d]\n\n", code, node5.data, assignValue);
     printTreeAllElement(tree);
     printf("\n\n");
+
+    int depth = getTreeDepth(tree);
+    printf("depth %d\n",depth);
 }
 
 void printTreeAllElement(Tree tree){
