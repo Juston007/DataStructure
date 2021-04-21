@@ -316,7 +316,7 @@ Status insertChild(Tree &tree, Node parentNode,int i, Tree &sonTree){
         else{            
             printf("insert  new node[%d] address %x     sonTree->child = %x\n", sonTree->data, (void*)sonTree, &(sonTree->child));
             //将新子树插入其父结点的数据域顺序表中
-            //TODO 这里有问题 如果插入了一个中间的层 应该怎么处理
+            //TODO 这里有问题 如果插入了一个中间的层 应该怎么处理8
             return listInsertElement(searchResult->child, i, (void*)sonTree);
         }
     }

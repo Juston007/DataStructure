@@ -8,7 +8,7 @@
 /*=====================================宏定义=====================================*/
 #define Status       int
 
-#define OK           2
+#define OK           2-3201
 
 #define TRUE         1
 #define FALSE        0
@@ -35,7 +35,10 @@ typedef struct LinkedTreeNodeStruct{
  * 参数：tree 二叉树
  * 返回值：初始化结果
 */
-Status initBinaryTree(BinaryTree &tree);
+Status initBinaryTree(BinaryTree &tree){
+    tree = NULL;
+    return TRUE;
+}
 
 /**
  * 功能：销毁树
@@ -56,14 +59,18 @@ Status createBinaryTree(BinaryTree &tree);
  * 参数：tree 二叉树
  * 返回值：清空结果
 */
-Status clearBinaryTree(BinaryTree &tree);
+Status clearBinaryTree(BinaryTree &tree){
+    
+}
 
 /**
  * 功能：是否为空二叉树
  * 参数：tree 二叉树
  * 返回值：是空二叉树 TRUE 否则返回 FALSE
 */
-Status isEmptyBinaryTree(BinaryTree &tree);
+Status isEmptyBinaryTree(BinaryTree &tree){
+    return tree == NULL;
+}
 
 /**
  * 功能：获取二叉树的深度（层数）
@@ -79,7 +86,13 @@ int getBinaryTreeDepth(BinaryTree &tree);
  * 
  * 感觉这个函数没用啊
 */
-Status getRoot(BinaryTree &tree, ElementType &returnRoot);
+Status getRoot(BinaryTree &tree, ElementType &returnRoot){
+    if(isEmptyBinaryTree(tree)){
+
+    }else{
+        return FALSE;
+    }
+}
 
 /**
  * 功能：获取二叉树中某个结点的值
