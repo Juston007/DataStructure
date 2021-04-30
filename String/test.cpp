@@ -3,6 +3,7 @@
 int index(char *str1, char *str2, int position);
 
 int main(){
+    unsigned char data[] = {0xCA, 0x1F, 0xC2, 0XF4, 0XB2, 0x02, 0x3C, 0xE8, 0x37, 0x66};
     //字符数组的索引为0的位置存储的是该字符串的长度
     char str1[] = "1aaabbbccc";
     str1[0] = 9;
