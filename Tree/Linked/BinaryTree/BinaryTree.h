@@ -403,9 +403,9 @@ Status inOrderTraverse(BinaryTree &tree){
         return FALSE;
     }else{
         //左根右
-        preOrderTraverse(tree->leftChild);
+        inOrderTraverse(tree->leftChild);
         printf("%d",tree->data);
-        preOrderTraverse(tree->rightChild);
+        inOrderTraverse(tree->rightChild);
         return TRUE;
     }
 }
@@ -421,8 +421,8 @@ Status postOrderTraver(BinaryTree &tree){
     }else{
         //左右根
         printf("%d",tree->data);
-        preOrderTraverse(tree->rightChild);
-        preOrderTraverse(tree->leftChild);
+        postOrderTraver(tree->rightChild);
+        postOrderTraver(tree->leftChild);
         return TRUE;
     }
 }
