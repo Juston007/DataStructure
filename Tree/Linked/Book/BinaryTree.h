@@ -8,7 +8,7 @@
 #define FALSE       0
 
 //数据类型
-#define BinaryTreeElementType   char
+#define BinaryTreeElementType   int
 
 
 //二叉树结点结构体定义
@@ -75,7 +75,7 @@ int getTreeDepth(BinaryTree tree){
 */
 void PreOrderTraverse(BinaryTree &tree){
     if(tree != NULL){
-        printf("%c",tree->data);
+        printf("%4d",tree->data);
         PreOrderTraverse(tree->leftChild);
         PreOrderTraverse(tree->rightChild);
     }
@@ -108,7 +108,7 @@ void InOrderTraverse(BinaryTree &tree){
             //再次出栈 出栈的是最左结点
             pop(stack,pointer);
             //打印结点值
-            printf("%c",((BinaryTree)pointer)->data);
+            printf("%4d",((BinaryTree)pointer)->data);
             //其右结点入栈  注意，这里原本的最左结点没有再次入栈
             push(stack,((BinaryTree)pointer)->rightChild);
         }

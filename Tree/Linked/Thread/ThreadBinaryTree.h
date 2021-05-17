@@ -1,3 +1,6 @@
+#include "stdio.h"
+#include "stdlib.h"
+
 
 #define Status          int
 #define TRUE            1
@@ -25,7 +28,24 @@ typedef struct ThreadBinaryNode{
     struct ThreadBinaryNode *rightChild;    //指针域 指向右孩子
     PointerTag leftTag;                     //左标志位
     PointerTag rightTag;                    //右标志位
-} ThreadBinaryNode, ThreadBinaryTree;
+} ThreadBinaryNode, *ThreadBinaryTree;
+
+Status createBinaryTree(ThreadBinaryTree &tree){
+    char inputChar;
+    scanf("%c", &inputChar);
+
+    if(inputChar == '*'){
+        tree = NULL;
+        return FALSE;
+    }else{
+        tree = (ThreadBinaryNode *)malloc(sizeof(ThreadBinaryNode));
+        tree->data = inputChar;
+        createBinaryTree(tree->leftChild);
+        createBinaryTree(tree->rightChild);
+        return TRUE;
+    }
+
+}
 
 
 Status InOrderTraverse_Thread(ThreadBinaryTree tree){
