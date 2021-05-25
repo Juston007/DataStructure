@@ -4,10 +4,34 @@
 #define TRUE    1
 #define FALSE   0
 
-typedef int Graph;
-typedef int Pair;
-typedef int Vertex;
-typedef int VertexRelationship;
+#define MAX_VERTEX_NUMBER           20
+
+#define VertexElementType           int
+#define VertexRelationshipType      int
+#define InfoType                    int
+
+typedef enum {
+    Digraph,                //有向图
+    DirectedNetwork,        //有向网
+    Undigraph,              //无向图
+    UndirectedNetwork       //无向网
+} GraphKind; //图的类型
+
+typedef struct Vertex{
+    VertexElementType data;                 //顶点值
+} Vertex;    //顶点
+
+typedef struct Arc{
+    VertexRelationshipType vrType;          //顶点关系类型
+    InfoType *info;                         //弧相关信息的指针
+} AdjacentMatrix[MAX_VERTEX_NUMBER][MAX_VERTEX_NUMBER];//邻接矩阵
+
+typedef struct{
+    Vertex vertexs[MAX_VERTEX_NUMBER];      //顶点向量（顶点）
+    AdjacentMatrix arcs;                    //邻接矩阵（关系）
+    int vertexNumber, arcNumber;            //图的当前顶点数和弧数
+    GraphKind kind;                         //图的种类标志
+} Graph;    //图
 
 /**
  * 功能：创建图
@@ -42,7 +66,7 @@ Status getVertex(Graph &graph, Vertex vertex);
  * 参数：graph 图结构体，vertex 顶点集合
  * 返回值：添加结果
 */
-Status putVertex(Graph, Vertex,Value);
+Status putVertex(Graph &graph, Vertex vertex,Value);
 
 /**
  * 功能：获取vertex的第一个邻接顶点
