@@ -38,7 +38,7 @@ typedef struct{
  * 参数：graph 图结构体，vertex 顶点集合，vr顶点关系集合
  * 返回值：创建结果
 */
-Status createGraph(Graph &graph, Vertex vertex, VertexRelationship vr);
+//Status createGraph(Graph &graph, Vertex vertex, VertexRelationship vr);
 
 /**
  * 功能：销毁图
@@ -66,7 +66,7 @@ Status getVertex(Graph &graph, Vertex vertex);
  * 参数：graph 图结构体，vertex 顶点集合
  * 返回值：添加结果
 */
-Status putVertex(Graph &graph, Vertex vertex,Value);
+//Status putVertex(Graph &graph, Vertex vertex,Value v);
 
 /**
  * 功能：获取vertex的第一个邻接顶点
@@ -122,5 +122,5 @@ Status DFSTraverse();
  * 参数：graph 图结构体，vertex 顶点集合，vr顶点关系集合
  * 返回值：创建结果
 */
-Status BFStRAVERSE();
+Status BFSTraverse();
 
