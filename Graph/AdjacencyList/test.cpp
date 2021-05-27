@@ -23,7 +23,7 @@ void traverseVertex(LinkedList vertexList){
             for(int j = 0;j < arcLength;j++){
                 getElement(vertex->arcs, j, temp);
                 Arc *arc = (Arc *)temp;
-                printf("arc     Adjacency Vertex = %#x", arc->adjacencyVertex);
+                printf("arc     Adjacency Vertex[%c] = %#x", arc->adjacencyVertex->data, arc->adjacencyVertex);
 
                 if(arc->info != NULL){
                     printf("     Info     %d\n", *(arc->info));
@@ -120,10 +120,10 @@ int main(){
     printAllVertexAddress(graph.vertices);
 
     /*************************添加顶点******************************/
-    addVertex(graph, &vertexG);
-    addVertex(graph, &vertexH);
-    addVertex(graph, &vertexI);
-    addVertex(graph, &vertexK);
+    // addVertex(graph, &vertexG);
+    // addVertex(graph, &vertexH);
+    // addVertex(graph, &vertexI);
+    // addVertex(graph, &vertexK);
 
     /*************************定位顶点******************************/
     Status locateIStatus = locateVertex(graph, &vertexI);
@@ -143,17 +143,29 @@ int main(){
     printf("getVertex   address:%#x\n", returnVertexPtr);
     traverseVertex(graph.vertices);
 
-    /*************************添加顶点******************************/
-    Status addArcResult = addArc(graph, &vertexI, &vertexK);
+    /*************************添加边******************************/
+    Status addArcResult = addArc(graph, &vertexI, &vertexK, NULL);
     printf("addArc   addArcResult:%d\n", addArcResult);
     traverseVertex(graph.vertices);
 
 
-    // /*************************删除顶点******************************/
-    // Status deleteResult = deleteVertex(graph, &vertexI);
-    // printf("deleteVertex   deleteResult:%d\n", deleteResult);
-    // traverseVertex(graph.vertices);
+    /*************************删除顶点以及相关的边******************************/
+    Status deleteResult = deleteVertex(graph, &vertexH);
+    printf("deleteVertex   deleteResult:%d\n", deleteResult);
+    traverseVertex(graph.vertices);
 
+    /*************************删除边******************************/
+    deleteResult = deleteArc(graph, &vertexG, &vertexI);
+    printf("deleteVertex   deleteResult:%d\n", deleteResult);
+    traverseVertex(graph.vertices);
+
+    /*************************获取第一个邻接的顶点******************************/
+    Vertex *returnAdjacencyVertex = firstAdjacency(graph, &vertexG);
+    printf("firstAdjacency    returnAdjacencyVertex = %#x\n", returnAdjacencyVertex);
+
+    /*************************获取下一个邻接的顶点******************************/
+    Vertex *nextAdjacencyVertex = nextAdjacency(graph, &vertexI, &vertexK);
+    printf("nextAdjacency    nextAdjacencyVertex = %#x\n", nextAdjacencyVertex);
 
     return 0;
 }

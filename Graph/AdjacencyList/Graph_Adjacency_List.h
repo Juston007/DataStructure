@@ -1,13 +1,15 @@
 #include "stdlib.h"
 #include "LinearList_Linked_Graph.h"
 
+/*=====================================宏定义=====================================*/
 #define Status  int
 #define TRUE    1
 #define FALSE   0
 
 #define InfoType    int
-#define VertexType  int
+#define VertexType  char
 
+/*=====================================结构体=====================================*/
 /**
  * 图的类型
 */
@@ -44,9 +46,15 @@ typedef struct Graph{
     int vertexNumber, arcNumber;    //顶点数目、边（弧）的数目
     GraphKind kind;                 //图的种类
 } Graph;
+/*=====================================结构体=====================================*/
 
+
+/*=====================================函数声明=====================================*/
 Status deleteArc(Graph &graph, Vertex *tail, Vertex *head);
+/*=====================================函数声明=====================================*/
 
+
+/*=====================================函数定义=====================================*/
 /**
  * 功能：创建图
  * 参数：graph 图结构体，vertex 顶点集合，kind 图的种类
@@ -60,6 +68,7 @@ Status createGraph(Graph &graph, LinkedList vertices, GraphKind kind){
     //初始化顶点集合
     initList(graph.vertices);
 
+    //初始化顶点以及边的数目
     graph.vertexNumber = graph.arcNumber = 0;
 
     //顶点集合为空 不用添加顶点集合
@@ -103,37 +112,43 @@ Status createGraph(Graph &graph, LinkedList vertices, GraphKind kind){
 Status destoryGraph(Graph &graph);
 
 /**
- * 功能：返回该顶点在图中位置  可能会发生变化
- * 参数：graph 图结构体，vertex 顶点
+ * 功能：返回该顶点在图中位置  （位置并不绝对，可能会发生变化）
+ * 参数：graph 图结构体，vertex 顶点指针
  * 返回值：若存在顶点vertex则返回该顶点在图中位置，否则返回-1
 */
-int locateVertex(Graph &graph, Vertex *vertex){
+int locateVertexIndex(Graph &graph, Vertex *vertex){
     return findElement(graph.vertices, vertex);
 }
 
 /**
  * 功能：根据顶点的值获取顶点的指针
- * 参数：graph 图结构体，vertex 顶点值
- * 返回值：顶点的
+ * 参数：graph 图结构体，value 顶点值
+ * 返回值：顶点的指针
 */
-Vertex * getVertex(Graph &graph, VertexType value){
+Vertex * getVertexPointer(Graph &graph, VertexType value){
+    void *temp = NULL;
+    Vertex *tempVertex;
     int length = getLength(graph.vertices);
 
-    void *temp = NULL;
+    //如果顶点集合的第i个顶点
     for(int i = 0;i < length;i++){
         getElement(graph.vertices, i, temp);
 
-        if(((Vertex *)temp)->data == value){
-            return (Vertex *)temp;
+        //第i个顶点的数据域与用户要找的相同
+        tempVertex = (Vertex *)temp;
+        if(tempVertex->data == value){
+            //那么返回顶点的指针
+            return tempVertex;
         }
     }
 
+    //循环结束都没有找到用户要找的，直接返回空
     return NULL;
 }
 
 /**
  * 功能：对顶点的数据域赋值
- * 参数：graph 图结构体，vertex 顶点
+ * 参数：graph 图结构体，vertex 顶点指针，value 数据
  * 返回值：赋值结果
 */
 Status putVertex(Graph &graph, Vertex *vertex, VertexType value){
@@ -141,9 +156,10 @@ Status putVertex(Graph &graph, Vertex *vertex, VertexType value){
         return ERROR;
     }
 
+    //查询该顶点是否存在顶点集合中
     int index = findElement(graph.vertices, vertex);
-
     if(index >= 0){
+        //修改数据域
         vertex->data = value;
         return TRUE;
     }else{
@@ -152,47 +168,77 @@ Status putVertex(Graph &graph, Vertex *vertex, VertexType value){
 }
 
 /**
- * 功能：获取vertex的第一个邻接顶点
- * 参数：graph 图结构体，vertex 顶点
+ * 功能：获取某顶点的第一个邻接顶点
+ * 参数：graph 图结构体，vertex 顶点指针
  * 返回值：获取结果
 */
-Status firstAdjacent(Graph &graph, Vertex v, Vertex &returnAdjacency){
+Vertex * firstAdjacency(Graph &graph, Vertex *v){
     if(isEmpty(graph.vertices)){
-        return FALSE;
+        return NULL;
     }else{
+        //获取下标为0的边
         void *temp;
-        getElement(v.arcs, 0, temp);
+        getElement(v->arcs, 0, temp);
 
-        Arc arc = *((Arc*)temp);
-        returnAdjacency = *arc.adjacencyVertex;
-        return TRUE;
+        //提取出边中的顶点信息并返回
+        Arc *arc = (Arc *)temp;
+        return arc->adjacencyVertex;
     }
 }
 
 /**
- * 功能：获取v的下一个邻接顶点
- * 参数：graph 图结构体，v 顶点，w 是v的邻接顶点
+ * 功能：获取顶点v的邻接顶点w的下一个邻接顶点
+ * 参数：graph 图结构体，v 顶点指针，w 是v的邻接顶点
  * 返回值：获取结果
 */
-Status nextAdjacent(Graph &graph, Vertex v, Vertex w);
+Vertex * nextAdjacency(Graph &graph, Vertex *v, Vertex *w){
+    if(isEmpty(graph.vertices)){
+        return NULL;
+    }else{
+        //获取下标为0的边
+        void *temp;
+        Arc *tempArc;
+        int flag = FALSE;
+
+        int arcLength = getLength(v->arcs);
+        for(int i = 0;i < arcLength;i++){
+            getElement(v->arcs, i, temp);
+            tempArc = (Arc *)temp;
+
+            if(flag == TRUE){
+                return tempArc->adjacencyVertex;
+            }
+
+            if(tempArc->adjacencyVertex == w){
+                flag = TRUE;
+            }
+        }
+ 
+        return NULL;
+    }
+}
 
 /**
- * 功能：插入新顶点；无视顶点中的邻接表
- * 参数：graph 图结构体，vertex 顶点
+ * 功能：插入新顶点
+ * 参数：graph 图结构体，value 顶点数据，returnVertex 通过此参数返回刚创建的顶点的指针
  * 返回值：插入结果
 */
-Status addVertex(Graph &graph, Vertex *insertVertex){
-    if(insertVertex == NULL){
-        return FALSE;
+Status addVertex(Graph &graph, VertexType value, Vertex *&returnVertex){
+    //生成一个新顶点
+    Vertex *newVertex = (Vertex *)malloc(sizeof(Vertex));
+
+    if(newVertex == NULL){
+        exit(0);
     }
 
-    if(findElement(graph.vertices, insertVertex) >= 0){
-        return INFEASIBLE;
-    }
+    //初始化其数据域和指针域
+    newVertex->data = value;
+    initList(newVertex->arcs);
 
-    initList(insertVertex->arcs);
-
-    if(insertElement(graph.vertices, graph.vertexNumber, insertVertex) == OK){
+    //将新顶点添加到顶点集合中
+    if(insertElement(graph.vertices, graph.vertexNumber, newVertex) == OK){
+        //将新顶点指针返回；并计算顶点数目
+        returnVertex = newVertex;
         graph.vertexNumber++;
         return TRUE;
     }else{
@@ -202,25 +248,41 @@ Status addVertex(Graph &graph, Vertex *insertVertex){
 
 /**
  * 功能：删除顶点及其相关的弧
- * 参数：graph 图结构体，vertex 顶点
+ * 参数：graph 图结构体，vertex 待删除顶点的指针
  * 返回值：删除结果
 */
 Status deleteVertex(Graph &graph, Vertex *deleteVertex){
+    //要删除的顶点不存在
     if(deleteVertex == NULL){
         return ERROR;
     }else{
         //找到要删除顶点的下标
         int index = findElement(graph.vertices, deleteVertex);
-        if(index >= 0){
-            void *temp;
-            //删除顶点
-            deleteElement(graph.vertices, index, temp);
+        void *temp;
 
-            //删除顶点相关联的边
+        //如果顶点存在
+        if(index >= 0){
+            //删除弧尾为该顶点的边
             while(!isEmpty(deleteVertex->arcs)){
+                //这里返回的是删除的边的指针
                 deleteElement(deleteVertex->arcs, 0, temp);
-                deleteArc(graph, deleteVertex, (Vertex *)temp);
+                deleteArc(graph, deleteVertex, ((Arc *)temp)->adjacencyVertex);
             }
+
+            Vertex *tmepVertex;
+            int vertexLength = getLength(graph.vertices);
+            //删除弧头为该顶点的边
+            for(int i = 0;i < vertexLength;i++){
+                getElement(graph.vertices, i, temp);
+
+                tmepVertex = (Vertex *)temp;
+                deleteArc(graph, tmepVertex, deleteVertex);
+            }
+
+            //删除顶点并计算顶点数目
+            deleteElement(graph.vertices, index, temp);
+            graph.vertexNumber--;
+
             return TRUE;            
         }else{
             return FALSE;
@@ -230,15 +292,41 @@ Status deleteVertex(Graph &graph, Vertex *deleteVertex){
 
 /**
  * 功能：插入新边（弧）
- * 参数：graph 图结构体，tail 顶点，head 顶点
+ * 参数：graph 图结构体，tail 弧尾顶点指针，head 弧头顶点指针
  * 返回值：插入结果
 */
-Status addArc(Graph &graph, Vertex *tail, Vertex *head){
-    int tailIndex = locateVertex(graph, tail);
-    int headIndex = locateVertex(graph, head);
+Status addArc(Graph &graph, Vertex *tail, Vertex *head, InfoType *info){
+    int tailIndex = locateVertexIndex(graph, tail);
+    int headIndex = locateVertexIndex(graph, head);
 
+    //判断两个顶点是否存在顶点集合中
     if((tailIndex >= 0) && (headIndex >= 0)){
-        insertElement(tail->arcs, 0, head);
+
+        //不允许自己指向自己
+        if(tailIndex == headIndex){
+            return ERROR;
+        }
+
+        //构造一个边并添加到邻接表中
+        //tail-->head
+        Arc *arcTailHead = (Arc *)malloc(sizeof(Arc));
+        arcTailHead->adjacencyVertex = head;
+        arcTailHead->info = info;
+        insertElement(tail->arcs, 0, arcTailHead);
+
+        //如果是无向图（网），那么另一个顶点也需要添加这条边的信息
+        if((graph.kind == Undigraph) || (graph.kind == UndirectedNetwork)){
+            //构造一个边并添加到邻接表中
+            //head-->tail
+            Arc *arcHeadTail = (Arc *)malloc(sizeof(Arc));
+            arcHeadTail->adjacencyVertex = tail;
+            arcHeadTail->info = info;
+            insertElement(head->arcs, 0, arcHeadTail);
+        }
+
+        //图的边数目加一
+        graph.arcNumber++;
+
         return TRUE;
     }else{
         return ERROR;
@@ -247,21 +335,58 @@ Status addArc(Graph &graph, Vertex *tail, Vertex *head){
 
 /**
  * 功能：删除边（弧）
- * 参数：graph 图结构体，v 顶点，w 顶点
+ * 参数：graph 图结构体，tail 弧尾顶点指针，head 弧头顶点指针
  * 返回值：删除结果
 */
 Status deleteArc(Graph &graph, Vertex *tail, Vertex *head){
-    int tailIndex = locateVertex(graph, tail);
-    int headIndex = locateVertex(graph, head);
+    int tailIndex = locateVertexIndex(graph, tail);
+    int headIndex = locateVertexIndex(graph, head);
 
+    //判断两个顶点是否存在顶点集合中
     if((tailIndex >= 0) && (headIndex >= 0)){
+
+        if(tailIndex == headIndex){
+            return ERROR;
+        }
+
         void *temp;
-        deleteElement(tail->arcs, headIndex, temp);
+        int tailArcLength = getLength(tail->arcs);
+        int headArcLength = getLength(head->arcs);
+
+        int isFound = FALSE;
+        //找到（弧尾为tail，弧头为head）的边
+        for(int i = 0;i < tailArcLength;i++){
+            getElement(tail->arcs, i, temp);
+
+            //找到对应边并删除
+            if(((Arc *)temp)->adjacencyVertex == head){
+                deleteElement(tail->arcs, i, temp);
+                isFound = TRUE;
+                break;
+            }
+        }
+
+        if(isFound != TRUE){
+            return INFEASIBLE;
+        }
+
+        //边的数目减一
+        graph.arcNumber--;
 
         //如果是无向图的话那么需要双向删除
         if((graph.kind == Undigraph) || (graph.kind == UndirectedNetwork)){
-            deleteElement(head->arcs, tailIndex, temp);
+            //找到（弧尾为head，弧头为tail）的边
+            for(int i = 0;i < headArcLength;i++){
+                getElement(head->arcs, i, temp);
+
+                //找到对应边并删除
+                if(((Arc *)temp)->adjacencyVertex == tail){
+                    deleteElement(head->arcs, i, temp);
+                    break;
+                }
+            }
         }
+        
         return TRUE;
     }else{
         return ERROR;
@@ -281,3 +406,4 @@ Status DFSTraverse();
  * 返回值：创建结果
 */
 Status BFSTraverse();
+/*=====================================函数定义=====================================*/
