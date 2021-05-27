@@ -263,9 +263,12 @@ Status deleteVertex(Graph &graph, Vertex *deleteVertex){
         //如果顶点存在
         if(index >= 0){
             //删除弧尾为该顶点的边
+            int deleteVertexArcLength = getLength(deleteVertex->arcs);
             while(!isEmpty(deleteVertex->arcs)){
-                //这里返回的是删除的边的指针
-                deleteElement(deleteVertex->arcs, 0, temp);
+                //这里返回的是删除的边的指针   
+                //调用deleteArc函数时，会操作顶点的邻接表 可能会导致错误 
+                //只删除第0个，也可从后往前删除
+                Status res = getElement(deleteVertex->arcs, 0, temp);
                 deleteArc(graph, deleteVertex, ((Arc *)temp)->adjacencyVertex);
             }
 
@@ -353,6 +356,7 @@ Status deleteArc(Graph &graph, Vertex *tail, Vertex *head){
         int tailArcLength = getLength(tail->arcs);
         int headArcLength = getLength(head->arcs);
 
+        //printf("deleteArc  tail[%c]-->head[%c]\n",tail != NULL ? tail->data : '-', head != NULL ? head->data : '-');
         int isFound = FALSE;
         //找到（弧尾为tail，弧头为head）的边
         for(int i = 0;i < tailArcLength;i++){
@@ -362,6 +366,7 @@ Status deleteArc(Graph &graph, Vertex *tail, Vertex *head){
             if(((Arc *)temp)->adjacencyVertex == head){
                 deleteElement(tail->arcs, i, temp);
                 isFound = TRUE;
+                //printf("delete\n");
                 break;
             }
         }
