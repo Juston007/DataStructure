@@ -1,6 +1,59 @@
 #include "stdio.h"
 #include "Graph_Adjacency_List.h"
 
+void traverseVertex(LinkedList vertexList){
+    printf("\n\n******************Traverse Vertex******************\n");
+    if(isEmpty(vertexList) == TRUE){
+        printf("该表中没有任何顶点信息\n");
+    }else{
+        void *temp;
+        int vertexLength = getLength(vertexList);
+
+        for(int i = 0;i < vertexLength;i++){
+            getElement(vertexList, i, temp);
+
+            Vertex *vertex = (Vertex *)temp;
+
+            //打印顶点值
+            printf("vertex data = %c\n", vertex->data);
+
+            printf("******************vertex arcs******************\n");
+            //打印顶点相关的边
+            int arcLength = getLength(vertex->arcs);
+            for(int j = 0;j < arcLength;j++){
+                getElement(vertex->arcs, j, temp);
+                Arc *arc = (Arc *)temp;
+                printf("arc     Adjacency Vertex = %#x", arc->adjacencyVertex);
+
+                if(arc->info != NULL){
+                    printf("     Info     %d\n", *(arc->info));
+                }else{
+                    printf("     not have info\n");
+                }
+            }
+
+            printf("\n");
+        }
+    }
+}
+
+void printAllVertexAddress(LinkedList vertexList){
+    if(isEmpty(vertexList) == TRUE){
+        printf("该表中没有任何顶点信息\n");
+    }else{
+        void *temp;
+        int vertexLength = getLength(vertexList);
+
+        for(int i = 0;i < vertexLength;i++){
+            getElement(vertexList, i, temp);
+            Vertex *vertex = (Vertex *)temp;
+            printf("Vertex[%c] address = %#x\n", vertex->data, vertex);
+        }
+
+        printf("\n\n");
+    }
+}
+
 int main(){
     Graph graph;
     LinkedList vertices, arcG, arcH, arcI, arcK;
@@ -64,6 +117,13 @@ int main(){
     /*************************创建图********************************/
     Status createStatus = createGraph(graph, vertices, Undigraph);
     printf("createGraph     createStatus %d\n", createStatus);
+    printAllVertexAddress(graph.vertices);
+
+    /*************************添加顶点******************************/
+    addVertex(graph, &vertexG);
+    addVertex(graph, &vertexH);
+    addVertex(graph, &vertexI);
+    addVertex(graph, &vertexK);
 
     /*************************定位顶点******************************/
     Status locateIStatus = locateVertex(graph, &vertexI);
@@ -77,6 +137,23 @@ int main(){
 
     Status locateGStatus = locateVertex(graph, &vertexG);
     printf("locateVertex     locateGStatus %d\n", locateGStatus);
+
+    /*************************根据值查找顶点******************************/
+    Vertex *returnVertexPtr = getVertex(graph, 'G');
+    printf("getVertex   address:%#x\n", returnVertexPtr);
+    traverseVertex(graph.vertices);
+
+    /*************************添加顶点******************************/
+    Status addArcResult = addArc(graph, &vertexI, &vertexK);
+    printf("addArc   addArcResult:%d\n", addArcResult);
+    traverseVertex(graph.vertices);
+
+
+    // /*************************删除顶点******************************/
+    // Status deleteResult = deleteVertex(graph, &vertexI);
+    // printf("deleteVertex   deleteResult:%d\n", deleteResult);
+    // traverseVertex(graph.vertices);
+
 
     return 0;
 }

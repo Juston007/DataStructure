@@ -45,16 +45,14 @@ typedef struct Graph{
     GraphKind kind;                 //图的种类
 } Graph;
 
+Status deleteArc(Graph &graph, Vertex *tail, Vertex *head);
+
 /**
  * 功能：创建图
  * 参数：graph 图结构体，vertex 顶点集合，kind 图的种类
  * 返回值：创建结果
 */
 Status createGraph(Graph &graph, LinkedList vertices, GraphKind kind){
-    //顶点集合为空
-    if(isEmpty(vertices)){
-        return FALSE;
-    }
 
     //设置图的种类
     graph.kind = kind;
@@ -63,6 +61,11 @@ Status createGraph(Graph &graph, LinkedList vertices, GraphKind kind){
     initList(graph.vertices);
 
     graph.vertexNumber = graph.arcNumber = 0;
+
+    //顶点集合为空 不用添加顶点集合
+    if(isEmpty(vertices)){
+        return TRUE;
+    }
 
     //复制顶点集合到图中
     int vertexLength = getLength(vertices);
@@ -109,11 +112,11 @@ int locateVertex(Graph &graph, Vertex *vertex){
 }
 
 /**
- * 功能：获取顶点的指针
- * 参数：graph 图结构体，vertex 顶点
- * 返回值：获取结果
+ * 功能：根据顶点的值获取顶点的指针
+ * 参数：graph 图结构体，vertex 顶点值
+ * 返回值：顶点的
 */
-Status getVertex(Graph &graph, VertexType value, Vertex *pointer){
+Vertex * getVertex(Graph &graph, VertexType value){
     int length = getLength(graph.vertices);
 
     void *temp = NULL;
@@ -121,21 +124,31 @@ Status getVertex(Graph &graph, VertexType value, Vertex *pointer){
         getElement(graph.vertices, i, temp);
 
         if(((Vertex *)temp)->data == value){
-            pointer = (Vertex *)temp;
-            return TRUE;
+            return (Vertex *)temp;
         }
     }
 
-    return FALSE;
+    return NULL;
 }
 
 /**
- * 功能：添加顶点
- * 参数：graph 图结构体，vertex 顶点集合
- * 返回值：添加结果
+ * 功能：对顶点的数据域赋值
+ * 参数：graph 图结构体，vertex 顶点
+ * 返回值：赋值结果
 */
-Status putVertex(Graph &graph, Vertex *vertex){
-    return insertElement(graph.vertices, graph.vertexNumber, vertex) == OK;
+Status putVertex(Graph &graph, Vertex *vertex, VertexType value){
+    if(vertex == NULL){
+        return ERROR;
+    }
+
+    int index = findElement(graph.vertices, vertex);
+
+    if(index >= 0){
+        vertex->data = value;
+        return TRUE;
+    }else{
+        return FALSE;
+    }
 }
 
 /**
@@ -168,15 +181,18 @@ Status nextAdjacent(Graph &graph, Vertex v, Vertex w);
  * 参数：graph 图结构体，vertex 顶点
  * 返回值：插入结果
 */
-Status insertVertex(Graph &graph, Vertex *insertVertex){
+Status addVertex(Graph &graph, Vertex *insertVertex){
     if(insertVertex == NULL){
         return FALSE;
     }
 
+    if(findElement(graph.vertices, insertVertex) >= 0){
+        return INFEASIBLE;
+    }
+
     initList(insertVertex->arcs);
 
-    Status insertStatus = insertElement(graph.vertices, graph.vertexNumber, insertVertex);
-    if(insertStatus == OK){
+    if(insertElement(graph.vertices, graph.vertexNumber, insertVertex) == OK){
         graph.vertexNumber++;
         return TRUE;
     }else{
@@ -194,14 +210,14 @@ Status deleteVertex(Graph &graph, Vertex *deleteVertex){
         return ERROR;
     }else{
         //找到要删除顶点的下标
-        int index = findElement(graph.vertices, deleteElement);
+        int index = findElement(graph.vertices, deleteVertex);
         if(index >= 0){
             void *temp;
             //删除顶点
             deleteElement(graph.vertices, index, temp);
 
             //删除顶点相关联的边
-            while(isEmpty(deleteVertex->arcs)){
+            while(!isEmpty(deleteVertex->arcs)){
                 deleteElement(deleteVertex->arcs, 0, temp);
                 deleteArc(graph, deleteVertex, (Vertex *)temp);
             }
@@ -217,7 +233,7 @@ Status deleteVertex(Graph &graph, Vertex *deleteVertex){
  * 参数：graph 图结构体，tail 顶点，head 顶点
  * 返回值：插入结果
 */
-Status insertArc(Graph &graph, Vertex *tail, Vertex *head){
+Status addArc(Graph &graph, Vertex *tail, Vertex *head){
     int tailIndex = locateVertex(graph, tail);
     int headIndex = locateVertex(graph, head);
 

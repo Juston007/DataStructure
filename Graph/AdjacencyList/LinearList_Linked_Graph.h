@@ -140,7 +140,12 @@ int getLength(LinkedList linkedList){
  * 返回值：是否为空
 */
 Status isEmpty(LinkedList linkedList){
-    return linkedList->next == NULL;
+    if(linkedList == NULL){
+        return TRUE;
+    }
+    else{
+        return linkedList->next == NULL;
+    }
 }
 
 
