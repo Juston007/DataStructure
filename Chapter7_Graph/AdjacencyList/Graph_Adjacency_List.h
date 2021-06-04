@@ -403,12 +403,20 @@ Status deleteArc(Graph &graph, Vertex *tail, Vertex *head){
  * 参数：graph 图结构体，vertex 顶点集合，vr顶点关系集合
  * 返回值：创建结果
 */
-Status DFSTraverse();
+Status DepthFirstSearch(Graph &graph, int *visited){
+    // if(visited == NULL){
+    //     visited = (int *)malloc(sizeof(int));
+    // }
+
+    // for(int i = firstAdjacency(graph,);;){
+
+    // }
+}
 
 /**
  * 功能：Breadth First Search 广度优先搜索
  * 参数：graph 图结构体，vertex 顶点集合，vr顶点关系集合
  * 返回值：创建结果
 */
-Status BFSTraverse();
+Status BreadthFirstSearch(Graph &graph);
 /*=====================================函数定义=====================================*/
