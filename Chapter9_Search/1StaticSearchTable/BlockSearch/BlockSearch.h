@@ -80,17 +80,14 @@ int BlockSearch(SearchTable searchTable, int searchlength, IndexTable indexTable
     printf("key[%d] at block %d     index start %d\n", key, blockIndex, indexTable[blockIndex].start);
 
     //查找失败
-    if(blockIndex == -1){
+    if((blockIndex == -1) || (blockIndex > indexLength - 1)){
+        //块不存在
         return -1;
     }
 
     //计算块的长度
     int currentBlockLength;
-    if(blockIndex > indexLength - 1){
-        //块不存在
-        return -1;
-    }
-    else if(blockIndex == indexLength - 1){
+    if(blockIndex == indexLength - 1){
         //最后一个块，用查找表长度减去该块起始下标
         currentBlockLength = searchlength - indexTable[blockIndex].start;
     }else{
