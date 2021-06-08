@@ -30,7 +30,7 @@ typedef struct LinkedTreeNodeStruct{
  * 参数：tree 二叉排序树；key 要查找的关键字；
  * 返回值：若查找成功返回结点指针，查找失败返回NULL
 */
-BinaryTree searchBST(BinarySortTree tree, ElementType key){
+BinarySortTree searchBST(BinarySortTree tree, ElementType key){
     //如果空则返回空
     //如果要查找的值和当前结点值相同，那么返回
     if((tree == NULL) || (tree->data == key)){
@@ -39,7 +39,7 @@ BinaryTree searchBST(BinarySortTree tree, ElementType key){
     //根据二叉排序树的性质
     //如果要查找的关键字大于结点值，那么继续查找右子树，否则继续查找左子树
     else{        
-        return search((key < tree->data) ? tree->leftChild : tree->rightChild);
+        return searchBST((key < tree->data) ? tree->leftChild : tree->rightChild, key);
     }
 }
 
@@ -61,7 +61,7 @@ Status searchBST(BinarySortTree root, ElementType key, BinarySortTree parent, Bi
     }
     //如果要查找的值小于结点值，那么继续查找左子树，否则继续查找右子树
     else{
-        BinaryTree searchTree = (key < tree->data) ? tree->leftChild : tree->rightChild;
+        BinarySortTree searchTree = (key < root->data) ? root->leftChild : root->rightChild;
         return searchBST(searchTree, key, root, returnTree);
     }
 }
@@ -115,8 +115,8 @@ Status deleteBST(BinarySortTree bst, ElementType value){
  * 参数：tree 二叉树    左根右
  * 返回值：遍历结果
 */
-Status inOrderTraverse(BinaryTree &tree){
-    if(isEmptyBinaryTree(tree)){
+Status inOrderTraverse(BinarySortTree &tree){
+    if(tree == NULL){
         return FALSE;
     }else{
         //左根右
