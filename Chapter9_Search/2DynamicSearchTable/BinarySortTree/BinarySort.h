@@ -25,6 +25,10 @@ typedef struct LinkedTreeNodeStruct{
 } BinaryNode, *BinarySortTree;
 /*=====================================结构体=====================================*/
 
+void initTree(BinarySortTree &bst){
+    bst = NULL;
+}
+
 /**
  * 功能：在二叉排序树中查找
  * 参数：tree 二叉排序树；key 要查找的关键字；
@@ -44,18 +48,18 @@ BinarySortTree searchBST(BinarySortTree tree, ElementType key){
 }
 
 /**
- * 功能：在二叉排序树中查找有指定关键字的结点
+ * 功能：在二叉排序树中查找有指定关键字的结点；查找成功返回父结点
  * 参数：root 根结点；key 要查找的关键字；parent 双亲；returnTree 通过此参数返回指针
  * 返回值：查找成功返回TRUE，否则返回FALSE
 */
 Status searchBST(BinarySortTree root, ElementType key, BinarySortTree parent, BinarySortTree &returnTree){
-    //已经查找到最后还是没有找到，返回FALSE
+    //已经查找到最后还是没有找到，返回（其父节点）并返回FALSE
     if(root == NULL){
-        returnTree = NULL;
+        returnTree = parent;
         return FALSE;
     }
-    //查找成功，返回该结点的父结点
-    else if(root->data = key){
+    //查找成功，返回（该结点）并返回TRUE
+    else if(root->data == key){
         returnTree = parent;
         return TRUE;
     }
@@ -88,10 +92,9 @@ Status insertBST(BinarySortTree &bst, ElementType value){
         if(parentNode == NULL){
             bst = node;
         }
-
         //根据二叉排序树的性质
         //左子树的值均小于根结点，右子树的值均大于根节点
-        if(value < parentNode->data){
+        else if(value < parentNode->data){
             parentNode->leftChild = node;
         }else{
             parentNode->rightChild = node;
@@ -106,8 +109,83 @@ Status insertBST(BinarySortTree &bst, ElementType value){
  * 参数：tree 二叉树    左根右
  * 返回值：遍历结果
 */
-Status deleteBST(BinarySortTree bst, ElementType value){
-    return NULL;
+Status deleteBST(BinarySortTree &bst, ElementType value){
+    BinarySortTree parent, node;
+
+    //查找该节点指针以及父结点指针
+    Status res = searchBST(bst, value, NULL, parent);
+    node = searchBST(bst, value);
+
+    //情况1：结点为空代表找不到；删除失败
+    if(node == NULL){
+        return FALSE;
+    }
+    //情况2：该结点为叶子结点
+    else if((node->leftChild == NULL) && (node->rightChild == NULL)){
+        //没有父结点，又为叶子结点
+        //说明该树只有一个结点，那么直接置为空即可
+        if(parent == NULL){
+            bst = NULL;
+        }
+        //否则直接删除（将父结点的对应指针设置为空）
+        else if(parent->leftChild == node){
+            parent->leftChild = NULL;
+        }else{
+            parent->rightChild = NULL;
+        }
+        return TRUE;
+    }
+    //情况3：该结点只有左孩子
+    else if((node->leftChild != NULL) && (node->rightChild == NULL)){
+        //没有父结点，又只有左孩子
+        //说明这棵树只有左子树
+        if(parent == NULL){
+            bst = node->leftChild;
+        }
+        //直接把被删除结点的左孩子接到被删除结点的父结点上
+        //爷爷收养内（左）孙子
+        else if(parent->leftChild == node){
+            parent->leftChild = node->leftChild;
+        }else{
+            parent->rightChild = node->leftChild;
+        }
+        return TRUE;
+    }
+    //情况4：该结点只有右孩子
+    else if((node->leftChild == NULL) && (node->rightChild != NULL)){
+        //没有父结点，又只有右孩子
+        //说明这棵树只有右子树
+        if(parent == NULL){
+            bst = node->rightChild;
+        }
+        //直接把被删除结点的右孩子接到被删除结点的父结点上
+        //爷爷收养外（右）孙子
+        else if(parent->leftChild == node){
+            parent->leftChild = node->rightChild;
+        }else{
+            parent->rightChild = node->rightChild;
+        }
+        return TRUE;
+    }
+    //情况5：该结点既有左孩子又有右孩子
+    else{
+        //找到该结点的中序遍历的前驱或者后继顶替其位置
+
+        //前驱；左子树一直找到最右结点；左子树中最大的
+        //后继；右子树一直找到最左结点；右子树中最小的
+        //这里用的是前驱顶替其位置
+        BinarySortTree priorNode = node->leftChild;
+        while(priorNode->rightChild != NULL){
+            priorNode = priorNode->rightChild;
+        }
+
+        //替换被删除的结点；直接修改数据域，可以不用重新修改关系
+        node->data = priorNode->data;
+
+        //删除顶替顶点的原来位置
+        deleteBST(node->leftChild ,priorNode->data);
+        return TRUE;
+    }
 }
 
 /**
@@ -121,7 +199,7 @@ Status inOrderTraverse(BinarySortTree &tree){
     }else{
         //左根右
         inOrderTraverse(tree->leftChild);
-        printf("%d",tree->data);
+        printf("%4d",tree->data);
         inOrderTraverse(tree->rightChild);
         return TRUE;
     }
