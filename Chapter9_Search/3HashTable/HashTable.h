@@ -6,11 +6,9 @@
 #define Status      int
 #define TRUE        1
 #define FALSE       0
-#define ERROR       -1
-#define OVERFLOW    -2
 
-#define KeyElementType      int
-#define ValueElementType    char*
+#define KeyElementType      int     //关键字类型
+#define ValueElementType    char    //值类型
 
 #define MAX_LIST_SIZE       100
 #define P                   97
@@ -18,11 +16,18 @@
 
 
 /*=====================================结构体=====================================*/
+
+/**
+ * 哈希表中存储的元素
+*/
 typedef struct ElementStruct{
-    KeyElementType      key;
-    ValueElementType    *value;
+    KeyElementType      key;        //关键字
+    ValueElementType    *value;     //值
 } *Element;
 
+/**
+ * 哈希表
+*/
 typedef struct HashTableStruct{
     Element         *elements;      //元素
     unsigned int    size;           //元素个数
@@ -33,12 +38,27 @@ typedef struct HashTableStruct{
 /*=====================================结构体=====================================*/
 
 
+/*=====================================函数声明=====================================*/
+unsigned int hashGenerateAddress(HashTable hashTable, KeyElementType key);
+unsigned int hash(HashTable hashTable, KeyElementType key);
+unsigned int conflictResolution(HashTable hashTable,KeyElementType key, unsigned int hashAddress);
+unsigned int linearProbing(HashTable hashTable, KeyElementType key, unsigned int hashAddress);
+Status initHashTable(HashTable &hashTable);
+int size(HashTable hashTable);
+Status get(HashTable hashTable, KeyElementType key, Element &returnElement);
+Status contains(HashTable hashTable, KeyElementType key);
+Status isEmpty(HashTable hashTable);
+Status put(HashTable hashTable, KeyElementType key, ValueElementType value);
+Status remove(HashTable hashTable, KeyElementType key);
+/*=====================================函数声明=====================================*/
+
+
 /*=====================================函数定义=====================================*/
 
 /**
- * 功能：哈希函数生成地址
+ * 功能：根据哈希函数生成地址
  * 参数：hashTable 哈希表；key 关键字；
- * 返回值：地址；准确的说这里是偏移量
+ * 返回值：地址；准确的说这里是指的在数组中的偏移量
 */
 unsigned int hashGenerateAddress(HashTable hashTable, KeyElementType key){
     //首先根据哈希函数生成一个地址
@@ -71,12 +91,15 @@ unsigned int conflictResolution(HashTable hashTable,KeyElementType key, unsigned
 /**
  * 功能：线性探测
  * 参数：hashTable 哈希表；key 关键字
- * 返回值：空的位置
+ * 返回值：查找空位置或者关键字相等的位置，如果都找不到则返回OVERFLOW
 */
 unsigned int linearProbing(HashTable hashTable, KeyElementType key, unsigned int hashAddress){
+
+    printf("\ngenerate address %5d\n", hashAddress);
+
     int d, offset;
-    
-    for(d = 1;d < hashTable->tableLength;d++){
+    //这里d从0开始，是因为要把刚生成的地址也判断以下是否可用
+    for(d = 0;d < hashTable->tableLength;d++){
         //Hi = (H(key) + di) % m
         //i = 1,2,...,k - 1,k   (k <= m - 1) m：表长
         offset = (hashAddress + d) % (hashTable->tableLength);
@@ -84,16 +107,22 @@ unsigned int linearProbing(HashTable hashTable, KeyElementType key, unsigned int
         //线性探测过程重，如果找到了关键字相同的元素，说明元素已经存在
         //到最后都没有找到相同关键字，但是探测到了空闲的位置，说明元素不存在，此位置可用
         //到最后也没有找到空闲的位置，返回-1
+
+        printf("probing (hash[%d] + d[%d]) %% m[%d] = %d ", hashAddress, d, hashTable->tableLength, offset);
         
         //找到了一个空闲的位置，那么将此地址返回
         if(hashTable->elements[offset] == NULL){
+            printf(" is %s null\n", hashTable->elements[offset] == NULL ? "not" : "");
             return offset;
         }
 
         //找到了一个与指定关键字相同的元素，那么将此地址返回
         if(hashTable->elements[offset]->key == key){
+            printf("key is %s equal\n", hashTable->elements[offset]->key == key ? "":"not");
             return offset;
         }
+
+        printf("\n");
     }
 
     //如果一直找不到，那么返回OVERFLOW
@@ -108,12 +137,10 @@ unsigned int linearProbing(HashTable hashTable, KeyElementType key, unsigned int
 Status initHashTable(HashTable &hashTable){
 
     //申请一个新HashTable变量的空间并赋值
-    if(hashTable == NULL){
-        hashTable = (HashTable)malloc(sizeof(HashTable));
+    hashTable = (HashTable)malloc(sizeof(HashTableStruct));
 
-        if(hashTable == NULL){
-            exit(0);
-        }
+    if(hashTable == NULL){
+        exit(0);
     }
 
     //初始化各个字段
@@ -174,6 +201,7 @@ Status get(HashTable hashTable, KeyElementType key, Element &returnElement){
         return OVERFLOW;
     }
 
+    //通过参数返回具有指定关键字元素的指针
     returnElement = hashTable->elements[offset];
 
     //如果函数生成的地址中有元素存在，说明具有指定关键字的元素存在
@@ -208,7 +236,7 @@ Status isEmpty(HashTable hashTable){
  * 参数：hashTable 哈希表；element 要插入的元素
  * 返回值：添加成功返回TRUE，否则返回FALSE
 */
-Status put(HashTable hashTable, KeyElementType key, ValueElementType value){
+Status put(HashTable hashTable, KeyElementType key, ValueElementType *value){
     //哈希表为空，返回ERROR
     if(hashTable == NULL){
         return ERROR;
@@ -227,7 +255,7 @@ Status put(HashTable hashTable, KeyElementType key, ValueElementType value){
         //生成一个新的元素并赋值
         Element element = (Element)malloc(sizeof(ElementStruct));
         element->key = key;
-        element->value = &value;
+        element->value = value;
 
         //在哈希表中添加元素；
         hashTable->elements[offset] = element;
