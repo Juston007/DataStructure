@@ -117,24 +117,24 @@ void calculCostTime(const char *methodName, ElementType *list, int length, Eleme
 
 int main(){
 	ElementType *list;
-	int length = 999999999;
+	int length = 99999999999;
     initListMy(list, length);
     
     for(int i = 0;i < length;i++){
         list[i] = i;
     }
 
-    list[123] = 1234;
+    list[123] = 12;
 
     /**************开始**************/
-    calculCostTime("locate1", list, length, 1, &locateElement_1);
+    calculCostTime("locate1", list, length, -111, &locateElement_1);
     //calculCostTime("locate2", list, length, 1, &locateElement_2);
 
     // for(int i = 0;i < length;i++){
     //     list[i] = i - 2 * i;
     // }
 
-    calculCostTime("locate3", list, length, 1, &locateElement_3);
+    calculCostTime("locate3", list, length, -111, &locateElement_3);
     /**************结束**************/
 
 
