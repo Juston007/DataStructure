@@ -96,10 +96,72 @@ void BinaryInsertionSort(ElementType *array, int length){
 }
 
 /**
- * 希尔排序 缩小增量排序
+ * 带有步长的直接插入排序
+*/
+void StraightInsertionSortWithStepSize(ElementType *array, int length, int stepSize){
+    for(int i = stepSize + 1;i < length;i++){
+        //printf("prior %d[%d] , next %d[%d]\n", i - stepSize, array[i - stepSize] , i, array[i]);
+
+        if(array[i] < array[i - stepSize]){
+            int j = i - stepSize;
+            int temp = array[i];
+
+            for(;(j >= 0) && (temp < array[j]);j -= stepSize){
+                array[j + stepSize] = array[j];
+            }
+
+            array[j + stepSize] = temp;
+        }
+    }
+}
+
+/**
+ * 希尔排序
  * Shell's Sort
 */
+void SheelSort(ElementType *array, int length){
 
+    //希尔排序是基于直接插入排序的，是直接插入排序的改进版
+
+    //直接插入排序在面对小量或基本有序的顺序表时表现良好
+    //希尔排序就是抓住了这两点
+    //1.小量 希尔排序通过将直接插入排序分成了一个一个小序列的方式来减少数量  不过不是分段，而是通过步长的方式 而且步长逐渐缩小
+    //2.基本有序 通过前面的小序列缩小增量的方式使得顺序表基本有序
+    //最后步长必定是1，也就是到最后再整体直接插入排序一遍  这个时候基本有序，所以直接插入排序效率较高
+
+    for(int i = length / 2;i > 0;i /= 2){
+        //printf("i %d\n", i);
+        StraightInsertionSortWithStepSize(array, length, i);
+    }
+}
+
+
+/**
+ * 起泡（冒泡）排序
+ * bubble sort
+*/
+void BubbleSort(ElementType *array, int length){
+    for(int i = 0;i < length - 1;i++){
+        int isSwap = FALSE;
+
+        //[length-i,length-1]   已排序区间
+        //[0,length-i-1]        未排序区间
+        for(int j = 0;j < length - i - 1;j++){
+            if(array[j + 1] < array[j]){
+                int temp = array[j + 1];
+                array[j + 1] = array[j];
+                array[j] = temp;
+
+                isSwap = TRUE;
+            }
+        }
+
+        //如果前面都没有交换，那么说明前面是有序的，那么剩下的不需要再比较了
+        if(!isSwap){
+            break;
+        }
+    }
+}
 
 /**
  * 打印所有元素
@@ -140,6 +202,18 @@ int main(){
 
     StraightInsertionSort(array, 10);
     printAllElement(array, 10, "straight insertion sort");
+
+    initArray(array, 10);
+    printAllElement(array, 10, "init array");
+
+    SheelSort(array, 10);
+    printAllElement(array, 10, "sheel sort");
+
+    initArray(array, 10);
+    printAllElement(array, 10, "init array");
+
+    BubbleSort(array, 10);
+    printAllElement(array, 10, "bubble sort");
 
     return 0;
 }
