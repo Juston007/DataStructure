@@ -164,6 +164,55 @@ void BubbleSort(ElementType *array, int length){
 }
 
 /**
+ * 交换顺序表中子表left至right的记录，使得枢轴记录到位
+*/
+int partition(ElementType *array, int left, int right){
+    //用子表的第一个记录作为枢轴
+    int temp;
+    int pivotKey = array[left];
+
+    //从表的两端交替的向中间扫描
+    while(left < right){
+        
+        //从右边扫描得到第一个比枢轴小的记录的下标
+        while((left < right) && (array[right] >= pivotKey)){
+            right--;
+        }
+        //将比枢轴记录小的记录交换到低端
+        temp = array[left];
+        array[left] = array[right];
+        array[right] = temp;
+        
+        
+        //从左边扫描得到第一个比枢轴大的记录的下标
+        while((left < right) && (array[left] <= pivotKey)){
+            left++;
+        }
+        //将比枢轴记录大的记录交换到高端
+        temp = array[left];
+        array[left] = array[right];
+        array[right] = temp;
+    }
+
+    //返回枢轴所在位置
+    return left;
+}
+
+void QuickSort(ElementType *array, int left, int right){
+    if(left < right){
+        //交换顺序表中子表left至right的记录，使得枢轴记录到位
+        //枢轴左边的数均小于枢轴
+        //枢轴右边的数均大于枢轴
+        int pivotLocation = partition(array, left, right);
+
+        //对低子表进行递归排序
+        QuickSort(array, left, pivotLocation - 1);
+        //对高子表进行递归排序
+        QuickSort(array, pivotLocation + 1, right);
+    }
+}
+
+/**
  * 打印所有元素
 */
 void printAllElement(ElementType *array, int length, const char *str){
@@ -214,6 +263,9 @@ int main(){
 
     BubbleSort(array, 10);
     printAllElement(array, 10, "bubble sort");
+
+    QuickSort(array, 0, 9);
+    printAllElement(array, 10, "quickq sort");
 
     return 0;
 }
